@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import org.json.*;
 
 /**
  * Created by chuckdries on 6/14/16.
@@ -8,9 +9,10 @@ import java.net.URL;
 public class InfoLayer {
     public static void main(String[] args){
 
-        String pagesURL = "https://desertcommunityrobotics.com/wp-json/wp/v2/posts";
-        String localtesturl = "";
+        String pagesURL = "https://desertcommunityrobotics.com/wp-json/wp/v2/pages";
+//        String localtesturl = "";
 
+//        System.out.println(java.home);
         System.out.println(get(pagesURL));
     }
     public static String get(String targetURL){
