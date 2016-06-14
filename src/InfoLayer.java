@@ -13,7 +13,12 @@ public class InfoLayer {
 //        String localtesturl = "";
 
 //        System.out.println(java.home);
-        System.out.println(get(pagesURL));
+
+        String str = get(pagesURL);
+        System.out.println(str);
+//        str = str.substring(1,str.length());
+        JSONArray arr = new JSONArray(str);
+        System.out.println(arr.getJSONObject(1));
     }
     public static String get(String targetURL){
         HttpURLConnection connection = null;
