@@ -8,9 +8,47 @@ import java.net.URL;
 public class InfoLayer {
     public static void main(String[] args){
 
+        String pagesURL = "https://desertcommunityrobotics.com/wp-json/wp/v2/posts";
+        String localtesturl = "";
 
+        System.out.println(get(pagesURL));
     }
-    //Found on the internet, let's see
+    public static String get(String targetURL){
+        HttpURLConnection connection = null;
+        try{
+            //create request
+            URL url = new URL(targetURL);
+            connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+
+            //send request body
+            //anything here? Probably not for GET requests
+
+            //get response
+            InputStream is = connection.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while((line = br.readLine()) != null){
+                response.append(line);
+                response.append('\n');
+            }
+            br.close();
+            return response.toString();
+            /* Notes
+            - Why use StringBuilder vs just +'ing an empty string?
+             */
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }finally{
+            if(connection!=null){
+                connection.disconnect();
+            }
+        }
+    }
+    //Found on the internet, let's break this down
     public static String excutePost(String targetURL, String urlParameters) {
         HttpURLConnection connection = null;
         try {
