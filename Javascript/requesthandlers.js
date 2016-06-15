@@ -59,4 +59,4 @@ function jsFriendlyJSONStringify(s) {
 exports.camps = camps;
 exports.classes = classes;
 // exports.upload = upload;
-// exports.show = show;
+ exports.events = events;

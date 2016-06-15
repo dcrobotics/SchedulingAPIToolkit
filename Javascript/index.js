@@ -8,6 +8,6 @@ handle["/"] = reqestHandlers.camps;
 handle["/camps"] = reqestHandlers.camps;
 handle["/classes"] = reqestHandlers.classes;
 // handle["/upload"] = reqestHandlers.upload;
-// handle["/show"] = reqestHandlers.show;
+ handle["/events"] = reqestHandlers.events;
 
 server.start(router.route, handle);
