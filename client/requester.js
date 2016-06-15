@@ -1,6 +1,8 @@
 //figure out scoping issues for this.params, etc.
 //take a look at http://www.w3schools.com/js/tryit.asp?filename=tryjs_object_prototype7
 
+//Does it have to do with the face that xcallback is being used as a callback but test is just being called normally?
+
 function requester(url, callbackFunc, parse, params) {
     this.inputParams = params;
     this.test = function () {
