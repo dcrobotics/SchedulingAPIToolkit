@@ -9,51 +9,54 @@ APIRef["camps"] = "/events"
 
 
 //request = the response we send
-function camps(response, request){
+function events(response, request) {
     var requrl = "https://desertcommunityrobotics.com/wp-json/ee/v4.8.29/events";
-    https.get(requrl, function(res){
+    https.get(requrl, function (res) {
         var resBody = ""; //the response we get
-        res.on("data", function(chunk){
-            resBody+=chunk; //we're going to wait until we have everything to send anything in case we want to deserialize the JSON or modify it in some way
+        res.on("data", function (chunk) {
+            resBody += chunk; //we're going to wait until we have everything to send anything in case we want to deserialize the JSON or modify it in some way
         });
-        res.on("end", function(){
+        res.on("end", function () {
             var resObj = JSON.parse(resBody);
-            response.writeHead(200, {"Content-Type":"application/json"});
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            response.writeHead(200, {
+                "Content-Type": "application/json"
+            });
+
             response.write(jsFriendlyJSONStringify(resObj)); //Like I said, waiting until data retrieval ends. Shouldn't really slow anything down as this app should have a near-instant connection to the wp
             response.end();
         });
     });
 }
 
-function jsFriendlyJSONStringify (s) {
+function classes(response, request) {
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    response.writeHead(200, {
+        "Content-Type": "text/plain"
+    });
+
+    response.write("Hello world! This request was made to /classes"); 
+    response.end();
+}
+function camps(response, request) {
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    response.writeHead(200, {
+        "Content-Type": "text/plain"
+    });
+
+    response.write("Hello world! this request was made to /camps"); 
+    response.end();
+}
+
+function jsFriendlyJSONStringify(s) {
     return JSON.stringify(s, null, 2);
 }
-// function upload(response, request) {
-//     console.log("Request for handler 'upload' was called");
-//
-//     var form = new formidable.IncomingForm();
-//     console.log("about to parse");
-//     form.parse(request, function(error, fields, files){
-//         console.log("done parsing");
-//         fs.rename(files.upload.path, "/tmp/test.png", function(error){
-//             if(error){
-//                 fs.unlink("/tmp/test.png");
-//                 fs.rename(files.upload.path, "/tmp/test.png");
-//             }
-//         });
-//         response.writeHead(200, {"Content-Type":"text/html"});
-//         response.write("received image: <br />");
-//         response.write("<img src='/show' />");
-//         response.end();
-//     });
-//
-// }
-// function show(response){
-//     console.log("Request handler 'show' was called.");
-//     response.writeHead(200, {"Content-Type":"image/png"});
-//     fs.createReadStream("/tmp/test.png").pipe(response);
-// }
+
 
 exports.camps = camps;
+exports.classes = classes;
 // exports.upload = upload;
 // exports.show = show;

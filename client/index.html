@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Client side testing</title>
+    <script src="requester.js" type="text/javascript">
+    </script>
+
+</head>
+
+<body>
+
+    <div id="test" style="color: red;">
+
+    </div>
+    <div id="gogo" style="color: blue">
+        
+    </div>
+    <script>
+        function bobo(responsetext, params) {
+            //            console.log(responsetext);
+            console.log("bobo params: " + params);
+            var container = document.getElementById(params)
+            var nDiv = document.createElement("div");
+            container.appendChild(nDiv);
+            nDiv.innerHTML = responsetext
+        }
+    </script>
+    <script>
+        bobo("hello", "test");
+        window.onload = function () {
+            var asdf = new requester("http://localhost:8888/camps", bobo, false, "test");
+            var asdf = new requester("http://localhost:8888/camps", bobo, false, "test");
+            var asdf = new requester("http://localhost:8888/classes", bobo, false, "gogo");
+            var asdf = new requester("http://localhost:8888/classes", bobo, false, "gogo");
+            var asdf = new requester("http://localhost:8888/classes", bobo, false, "gogo");
+            var asdf = new requester("http://localhost:8888/classes", bobo, false, "gogo");
+            
+
+        }
+    </script>
+</body>
+
+</html>
