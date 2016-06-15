@@ -18,9 +18,9 @@
         
     </div>
     <script>
-        function bobo(responsetext, params) {
+        function renderContent(responsetext, params) {
             //            console.log(responsetext);
-            console.log("bobo params: " + params);
+            console.log("renderContent params: " + params);
             var container = document.getElementById(params)
             var nDiv = document.createElement("div");
             container.appendChild(nDiv);
@@ -29,15 +29,8 @@
     </script>
     <script>
         bobo("hello", "test");
-        window.onload = function () {
-            new requester("http://localhost:8888/camps", bobo, false, "test");
-            new requester("http://localhost:8888/camps", bobo, false, "test");
-            new requester("http://localhost:8888/events", bobo, false, "test");
-            new requester("http://localhost:8888/classes", bobo, false, "gogo");
-            new requester("http://localhost:8888/classes", bobo, false, "gogo");
-            new requester("http://localhost:8888/classes", bobo, false, "gogo");
-            
-
+        window.onload = function () { //wait for the document to load before attempting to modify it
+            new requester("http://localhost:8888/camps", renderContent, false, "test");
         }
     </script>
 </body>
