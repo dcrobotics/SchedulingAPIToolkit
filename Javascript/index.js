@@ -6,7 +6,7 @@ var handle = {};
 
 handle["/"] = reqestHandlers.camps;
 handle["/camps"] = reqestHandlers.camps;
-handle["/upload"] = reqestHandlers.upload;
-handle["/show"] = reqestHandlers.show;
+// handle["/upload"] = reqestHandlers.upload;
+// handle["/show"] = reqestHandlers.show;
 
 server.start(router.route, handle);
