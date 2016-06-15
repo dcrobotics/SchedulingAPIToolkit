@@ -4,8 +4,8 @@ var reqestHandlers = require("./requestHandlers");
 
 var handle = {};
 
-handle["/"] = reqestHandlers.start;
-handle["/start"] = reqestHandlers.start;
+handle["/"] = reqestHandlers.camps;
+handle["/camps"] = reqestHandlers.camps;
 handle["/upload"] = reqestHandlers.upload;
 handle["/show"] = reqestHandlers.show;
 
