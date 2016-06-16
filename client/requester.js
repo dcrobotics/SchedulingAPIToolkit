@@ -1,25 +1,41 @@
-//figure out scoping issues for this.params, etc.
-//take a look at http://www.w3schools.com/js/tryit.asp?filename=tryjs_object_prototype7
+//Significantly changed how this works
+//Now, requester is simply a shell function that returns the anonymous function that we actually want
+//Apparently  in javascript if you save an anonymous function with specific arguments to a variable or an array,
+//it preserves the state of those arguments. I guess that's how closures work lol.
+//Anyway now we save these functions to an array, but unlike instantiating these functions as objects,
+//they aren't evaluated when we create them. We can populate an array with requesters and choose
+//to wait to dispatch them if we want. Kinda cool :)
+var reqs = [];
 
-//Does it have to do with the face that xcallback is being used as a callback but test is just being called normally?
-
-function requester(url, callbackFunc, parse, params) {
-    this.inputParams = params;
-    this.test = function () {
-        console.log("this.inputParams in this.test: " + this.inputParams);  //This works completely fine
-    }
-    this.xcallback = function () {
-        console.log("this.inputParams in this.xcallback: " + this.inputParams);  //this.inputparams always shows up as undefined
-        if(parse===false){
-            callbackFunc(this.responseText, params);   //but params works just fine?
-        } else {
-            callbackFunc(JSON.parse(this.responseText), params);
+function requester(url, callbackFunc, parse, params, idx) {
+    return function () {
+        var xcallback = function () {
+            if (parse === false) {
+                callbackFunc(this.responseText, params, idx); //but params works just fine?
+            } else {
+                callbackFunc(JSON.parse(this.responseText), params, idx);
+            }
         }
+        var xhr = new XMLHttpRequest;
+        xhr.addEventListener("load", xcallback);
+        xhr.open("GET", url);
+        xhr.send();
     }
-    this.url = url;
-    this.xhr = new XMLHttpRequest;
-    this.xhr.addEventListener("load", this.xcallback);
-    this.xhr.open("GET", this.url);
-    this.xhr.send();
-    this.test();
+
+}
+function call(fn){
+    fn();
+}
+function addRequest(url, callBackFunc, parse, params){
+    var idx = reqs.length;
+    reqs.push(requester(url, callBackFunc, parse, params, idx));
+    return idx;
+}
+
+function dispatch(idx){
+    call(reqs[idx]);
+}
+
+function dispatchAll(){
+    reqs.forEach(call);
 }

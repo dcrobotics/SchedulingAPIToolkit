@@ -10,7 +10,7 @@
 </head>
 
 <body>
-
+<h1>Give us a minute!</h1>
     <div id="test" style="color: red;">
 
     </div>
@@ -18,19 +18,22 @@
         
     </div>
     <script>
-        function renderContent(responsetext, params) {
+        function renderContent(responsetext, params, idx) {
             //            console.log(responsetext);
             console.log("renderContent params: " + params);
             var container = document.getElementById(params)
             var nDiv = document.createElement("div");
             container.appendChild(nDiv);
-            nDiv.innerHTML = responsetext
+            nDiv.innerHTML = responsetext + " // idx: " + idx;
         }
     </script>
     <script>
-        bobo("hello", "test");
+//        bobo("hello", "test");
         window.onload = function () { //wait for the document to load before attempting to modify it
-            new requester("http://localhost:8888/camps", renderContent, false, "test");
+//            window.alert("yo");
+            
+
+
         }
     </script>
 </body>

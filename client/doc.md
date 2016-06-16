@@ -1,5 +1,7 @@
 # Function Reference
 
+# ALL THIS IS WRONG!
+
 `function xget(url, callback)`  
 Get's and returns the text at a given URL and triggers a callback when done
 

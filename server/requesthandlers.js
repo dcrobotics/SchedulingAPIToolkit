@@ -9,7 +9,7 @@ APIRef["camps"] = "/events"
 
 
 //request = the response we send
-function events(response, request) {
+function events(search, response, request) {
     var requrl = "https://desertcommunityrobotics.com/wp-json/ee/v4.8.29/events";
     https.get(requrl, function (res) {
         var resBody = ""; //the response we get
@@ -30,7 +30,7 @@ function events(response, request) {
     });
 }
 
-function classes(response, request) {
+function classes(search, response, request) {
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     response.writeHead(200, {
@@ -40,14 +40,16 @@ function classes(response, request) {
     response.write("Hello world! This request was made to /classes"); 
     response.end();
 }
-function camps(response, request) {
+function camps(search, response, request) {
+//    console.log(request);
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     response.writeHead(200, {
         "Content-Type": "text/plain"
     });
 
-    response.write("Hello world! this request was made to /camps"); 
+//    console.log(search);
+    response.write("Hello world! this request was made to /camps with the filter \"" + search +"\""); 
     response.end();
 }
 
