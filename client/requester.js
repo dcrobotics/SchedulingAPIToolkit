@@ -1,4 +1,4 @@
-//Significantly changed how this works
+//Significantly changed how this works (also fixed that scoping issue we were having)
 //Now, requester is simply a shell function that returns the anonymous function that we actually want
 //Apparently  in javascript if you save an anonymous function with specific arguments to a variable or an array,
 //it preserves the state of those arguments. I guess that's how closures work lol.
