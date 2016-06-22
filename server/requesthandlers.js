@@ -7,7 +7,6 @@ var https = require("https");
 var APIRef = {}
 APIRef["camps"] = "/events"
 
-
 //request = the response we send
 function events(search, response, request) {
     var requrl = "https://desertcommunityrobotics.com/wp-json/ee/v4.8.29/events";
@@ -36,20 +35,16 @@ function classes(search, response, request) {
     response.writeHead(200, {
         "Content-Type": "text/plain"
     });
-
-    response.write("Hello world! This request was made to /classes"); 
+    response.write("Hello world! This request was made to /classes");
     response.end();
 }
 function camps(search, response, request) {
-//    console.log(request);
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     response.writeHead(200, {
         "Content-Type": "text/plain"
     });
-
-//    console.log(search);
-    response.write("Hello world! this request was made to /camps with the filter \"" + search +"\""); 
+    response.write("Hello world! this request was made to /camps with the filter \"" + search +"\"");
     response.end();
 }
 
@@ -60,5 +55,4 @@ function jsFriendlyJSONStringify(s) {
 
 exports.camps = camps;
 exports.classes = classes;
-// exports.upload = upload;
  exports.events = events;

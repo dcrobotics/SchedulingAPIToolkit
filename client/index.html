@@ -6,34 +6,31 @@
     <title>Client side testing</title>
     <script src="requester.js" type="text/javascript">
     </script>
-
+    <script>
+        function listEvents(response, params, idx) {
+            var container = document.getElementById(params);
+            window.alert(response.length);
+            for (var i = 0; i < response.length; i++){
+                var nDiv = document.createElement("div");
+                container.appendChild(nDiv);
+                nDiv.innerHTML = "<h2>"+response[i]["EVT_name"]+"</h2><p>"+response[i]["EVT_desc"]["rendered"]+"</p>";
+            }
+            
+        }
+        // queue up the reqests
+        addRequest("http://localhost:8888/events", listEvents, true, "mainDiv");
+    </script>
 </head>
 
 <body>
-<h1>Give us a minute!</h1>
-    <div id="test" style="color: red;">
+<!--<h1>Give us a minute!</h1>-->
+    <div id="mainDiv" style="color: blue;">
 
     </div>
-    <div id="gogo" style="color: blue">
-        
-    </div>
+    
     <script>
-        function renderContent(responsetext, params, idx) {
-            //            console.log(responsetext);
-            console.log("renderContent params: " + params);
-            var container = document.getElementById(params)
-            var nDiv = document.createElement("div");
-            container.appendChild(nDiv);
-            nDiv.innerHTML = responsetext + " // idx: " + idx;
-        }
-    </script>
-    <script>
-//        bobo("hello", "test");
         window.onload = function () { //wait for the document to load before attempting to modify it
-//            window.alert("yo");
-            
-
-
+            dispatchAll();
         }
     </script>
 </body>
