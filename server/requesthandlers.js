@@ -1,5 +1,6 @@
 // var exec = require("child_process").exec;
 var querystring = require("querystring");
+var OAuth = require("oauth-1.0a");
 var fs = require("fs");
 var formidable = require("formidable");
 var https = require("https");
@@ -7,6 +8,13 @@ var https = require("https");
 var APIRef = {}
 APIRef["camps"] = "/events"
 
+
+var oauth = OAuth({
+    consumer: {
+        public: 'bJJSUlPkEM7A',
+        secret: 'secret! No peeking!'
+    }
+});
 //request = the response we send
 function events(search, response, request) {
     var requrl = "https://desertcommunityrobotics.com/wp-json/ee/v4.8.29/events";
@@ -17,11 +25,7 @@ function events(search, response, request) {
         });
         res.on("end", function () {
             var resObj = JSON.parse(resBody);
-            response.setHeader("Access-Control-Allow-Origin", "*");
-            response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            response.writeHead(200, {
-                "Content-Type": "application/json"
-            });
+            response = easyHeader(response);
 
             response.write(jsFriendlyJSONStringify(resObj)); //Like I said, waiting until data retrieval ends. Shouldn't really slow anything down as this app should have a near-instant connection to the wp
             response.end();
@@ -30,26 +34,27 @@ function events(search, response, request) {
 }
 
 function classes(search, response, request) {
-    response.setHeader("Access-Control-Allow-Origin", "*");
-    response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    response.writeHead(200, {
-        "Content-Type": "text/plain"
-    });
+    response = easyHeader(response);
     response.write("Hello world! This request was made to /classes");
     response.end();
 }
 function camps(search, response, request) {
-    response.setHeader("Access-Control-Allow-Origin", "*");
-    response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    response.writeHead(200, {
-        "Content-Type": "text/plain"
-    });
+    response = easyHeader(response);
     response.write("Hello world! this request was made to /camps with the filter \"" + search +"\"");
     response.end();
 }
 
 function jsFriendlyJSONStringify(s) {
     return JSON.stringify(s, null, 2);
+}
+
+function easyHeader(response){
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    response.writeHead(200, {
+        "Content-Type": "text/plain"
+    });
+    return response;
 }
 
 
