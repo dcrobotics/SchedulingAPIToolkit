@@ -1,0 +1,26 @@
+{
+  "name": "SchedulingAPIToolkit",
+  "version": "1.0.0",
+  "description": "An abstraction between whatever wordpress plugin happens to handle course registration and scheduling at any given time and our internal systems",
+  "main": "index.js",
+  "dependencies": {
+    "formidable": "^1.0.17",
+    "oauth-1.0a": "^1.0.1",
+    "request": "^2.72.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcrobotics/SchedulingAPIToolkit.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dcrobotics/SchedulingAPIToolkit/issues"
+  },
+  "homepage": "https://github.com/dcrobotics/SchedulingAPIToolkit#readme"
+}
