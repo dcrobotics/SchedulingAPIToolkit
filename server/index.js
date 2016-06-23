@@ -10,5 +10,6 @@ handle["/classes"] = reqestHandlers.classes;
 // handle["/upload"] = reqestHandlers.upload;
 handle["/events"] = reqestHandlers.events;
 handle["/testAuth"] = reqestHandlers.testAuth;
+handle["/authcallback"] = reqestHandlers.authcallback;
 
 server.start(router.route, handle);
