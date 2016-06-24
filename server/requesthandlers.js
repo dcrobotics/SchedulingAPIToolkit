@@ -14,8 +14,6 @@ var oauth = OAuth({
     signature_method: 'HMAC-SHA1'
 });
 
-// var oauth_token = "mYKPldEurgFZVyiq9SEUY7oZ";
-// var oauth_verifier = "DwzngcTVQGFiq9YHhOjtDKDb";
 var wp_scope="*";
 /* routing functions */
 
