@@ -9,16 +9,21 @@ APIRef["camps"] = "/events"
 var oauth = OAuth({
     consumer: {
         public: 'bJJSUlPkEM7A',
-        secret: 'Secret! no peeking!'
+        secret: 'secret'
     },
     signature_method: 'HMAC-SHA1'
 });
 
+var oauth_token = "secret";
+var oauth_verifier = "secret";
+var wp_scope="*";
 /* routing functions */
 
 //response = the response we send
 //request = the request that we recieved
 //search = filter parameters I think
+
+//TODO: clean this shit up
 function testAuth(search, response, request){
     //useful: https://github.com/WP-API/OAuth1
     //HOW THE HELL DID THIS TAKE ME 3 DAYS TO FIND http://oauth1.wp-api.org
@@ -81,14 +86,14 @@ function events(search, response, request) {
             response = easyHeader(response);
 
             for(var i = 0; i < parsedObj.length; i++){ //iterate through events
-                response.write("Event ID: " + parsedObj[i]["EVT_ID"] +"\n");
-                parsedObj[i]["ticket_link"]="https://desertcommunityrobotics.com/wp-json/ee/v4.8.36/tickets?include=TKT_name&where[Datetime.Event.EVT_ID]="+parsedObj[i]["EVT_ID"];
-                response.write("\t https://desertcommunityrobotics.com/wp-json/ee/v4.8.36/tickets?include=TKT_name&where[Datetime.Event.EVT_ID]="+parsedObj[i]["EVT_ID"]+"\n");
+                // response.write("Event ID: " + parsedObj[i]["EVT_ID"] +"\n");
+                parsedObj[i]["ticket_link"]="https://desertcommunityrobotics.com/wp-json/ee/v4.8.36/tickets?include=TKT_name%26where[Datetime.Event.EVT_ID]="+parsedObj[i]["EVT_ID"];
+                // response.write("\t https://desertcommunityrobotics.com/wp-json/ee/v4.8.36/tickets?include=TKT_name%26where[Datetime.Event.EVT_ID]="+parsedObj[i]["EVT_ID"]+"\n");
             }
 
 
 
-            response.write(jsFriendlyJSONStringify(parsedObj)); //Like I said, waiting until data retrieval ends. Shouldn't really slow anything down as this app should have a near-instant connection to the wp
+            response.write(JSON.stringify(parsedObj)); //Like I said, waiting until data retrieval ends. Shouldn't really slow anything down as this app should have a near-instant connection to the wp
             response.end();
         });
     });
