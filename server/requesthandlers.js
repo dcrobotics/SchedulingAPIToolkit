@@ -14,8 +14,8 @@ var oauth = OAuth({
     signature_method: 'HMAC-SHA1'
 });
 
-var oauth_token = "secret";
-var oauth_verifier = "secret";
+// var oauth_token = "mYKPldEurgFZVyiq9SEUY7oZ";
+// var oauth_verifier = "DwzngcTVQGFiq9YHhOjtDKDb";
 var wp_scope="*";
 /* routing functions */
 
@@ -111,10 +111,52 @@ function camps(search, response, request) {
 }
 function authcallback(search, response, request){
     // console.log(request);\
-    console.log(search);
-    response = easyHeader(response);
-    response.write(search);
-    response.end();
+    var passback = querystring.parse(search);
+    var request_data = { //Options for oauth.authorize
+        url: 'https://desertcommunityrobotics.com/oauth1/access',
+        method: 'POST',
+        data: {
+            oauth_token: passback["oauth_token"],
+            oauth_verifier: passback["oauth_verifier"],
+            wp_scope: '*'
+        }
+    };
+    var authInfo = oauth.authorize(request_data);
+    var data = querystring.stringify(authInfo);
+    var options = { //options required for the https request
+        hostname: 'desertcommunityrobotics.com',
+        port: 443,
+        path: '/oauth1/access',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength(data)
+        }
+    };
+    var req = https.request(options, function(res){ //create the https request
+        var resBody = "";
+        res.on("data", function(d) { //get the response body and save it
+            resBody+=d;
+            // console.log("d: "+d);
+        });
+        res.on("end", function () {  //response is back, redirect the user and pass the oauth token.  SHOULD THIS BE POSTED?
+            var tokenresponse = querystring.parse(resBody);
+            response = easyHeader(response);
+            console.log(tokenresponse);
+            response.write(resBody);
+            response.end();
+        });
+    });
+    req.write(data);  //write the authorization info to the request
+    // console.log(data);
+    req.end();
+
+    req.on('error', (e) => {
+        console.error(e);
+    });
+    // console.log(authInfo);
+
+
 }
 
 /* Useful functions */
