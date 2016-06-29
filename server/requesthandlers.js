@@ -3,13 +3,13 @@ var OAuth = require("oauth-1.0a");
 var https = require("https");
 
 var APIRef = {}
-APIRef["camps"] = "/events"
+// APIRef["camps"] = "/events";
 
 
 var oauth = OAuth({
     consumer: {
         public: 'bJJSUlPkEM7A',
-        secret: 'secret'
+        secret: '84qDaRvAzwpyHIyizlpA1r7bV1GtTKfmZs1UFcRUkmChuWkY'
     },
     signature_method: 'HMAC-SHA1'
 });
@@ -21,7 +21,7 @@ var wp_scope="*";
 //request = the request that we recieved
 //search = filter parameters I think
 
-//TODO: clean this shit up
+//TODO: clean this stuff up
 function testAuth(search, response, request){
     //useful: https://github.com/WP-API/OAuth1
     //HOW THE HELL DID THIS TAKE ME 3 DAYS TO FIND http://oauth1.wp-api.org
@@ -35,9 +35,9 @@ function testAuth(search, response, request){
     };
     var authInfo = oauth.authorize(request_data); //Creates an object that store the requisite information we need to send to wordpress
     //Step 1 of http://oauthbible.com (three legged) comes from oath.authorize
-    console.log(authInfo);
+    // console.log(authInfo);
     var data = querystring.stringify(authInfo); //THIS TOOK FOREVER TO FIGURE OUT turns out you need to send this info as a query string
-    console.log(data);
+    // console.log(data);
     var options = { //options required for the https request
         hostname: 'desertcommunityrobotics.com',
         port: 443,
@@ -85,6 +85,8 @@ function events(search, response, request) {
 
             for(var i = 0; i < parsedObj.length; i++){ //iterate through events
                 // response.write("Event ID: " + parsedObj[i]["EVT_ID"] +"\n");
+                //TODO: attach datetimes
+                //TODO: use get /"extraction" functions that build these links, are passed events or whatever
                 parsedObj[i]["ticket_link"]="https://desertcommunityrobotics.com/wp-json/ee/v4.8.36/tickets?include=TKT_name%26where[Datetime.Event.EVT_ID]="+parsedObj[i]["EVT_ID"];
                 // response.write("\t https://desertcommunityrobotics.com/wp-json/ee/v4.8.36/tickets?include=TKT_name%26where[Datetime.Event.EVT_ID]="+parsedObj[i]["EVT_ID"]+"\n");
             }
@@ -120,7 +122,9 @@ function authcallback(search, response, request){
         }
     };
     var authInfo = oauth.authorize(request_data);
+    console.log(authInfo);
     var data = querystring.stringify(authInfo);
+    console.log(data);
     var options = { //options required for the https request
         hostname: 'desertcommunityrobotics.com',
         port: 443,
@@ -138,21 +142,18 @@ function authcallback(search, response, request){
             // console.log("d: "+d);
         });
         res.on("end", function () {  //response is back, redirect the user and pass the oauth token.  SHOULD THIS BE POSTED?
-            var tokenresponse = querystring.parse(resBody);
             response = easyHeader(response);
-            console.log(tokenresponse);
+
             response.write(resBody);
             response.end();
         });
     });
     req.write(data);  //write the authorization info to the request
-    // console.log(data);
     req.end();
 
     req.on('error', (e) => {
         console.error(e);
     });
-    // console.log(authInfo);
 
 
 }
