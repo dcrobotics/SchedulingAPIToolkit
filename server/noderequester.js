@@ -1,39 +1,35 @@
+var https = require("https");
 var reqs = [];
 
-function requester(options, callBackFunc, parse, params, idx){
-    return function(){
-        var data = ""
-        var xcallback = function (data, params, idx) {
-             //will data be empty here? does xcallback preserve the empty data var or use the most recent one?
-            if (parse === false) {
-                callbackFunc(data, params, idx);
-            } else {
-                callbackFunc(JSON.parse(data), params, idx);
-            }
-        }
-        var req = https.request(options, function(res){
-            res.on("data", function(d){
-                data+=d;
-            });
-            res.on("end", xcallback());
-        });
-    }
-}
+//unfortunately, the requests call themselves. This works differently than the browser side, does that matter?
 
 function call(fn){
     fn();
 }
 
-function addRequest(options, callBackFunc, parse, params){
+function addRequest(options, callBackFunc, params){
     var idx = reqs.length;
-    reqs.push(requester(options, callBackFunc, parse, params, idx));
+    var req = https.request(options, function(res){
+        var data = ""
+        res.on("data", function(d){
+            data+=d;
+            console.log(data);
+        });
+        res.on("end", function () {
+            callBackFunc(data, params, idx);
+        });
+    });
+    reqs.push(req);
     return idx;
 }
 
 function writeRequest(idx, data){
+    console.log("writing " + idx)
+    console.log("reqs: " + reqs);
     reqs[idx].write(data);
 }
 function endRequest(idx){
+    console.log("ending " + idx);
     reqs[idx].end();
 }
 function dispatchRequest(idx){
