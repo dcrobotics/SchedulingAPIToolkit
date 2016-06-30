@@ -1,3 +1,4 @@
+//OUT OF DATE, SEE AUTHENTICATION.JS FOR PROPER REQUEST IMPLEMENTATION
 var querystring = require("querystring");
 var OAuth = require("oauth-1.0a");
 var https = require("https");

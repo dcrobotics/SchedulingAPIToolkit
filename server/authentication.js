@@ -21,7 +21,7 @@ function leg1(search, response, request){
     };
     var authInfo = oauth.authorize(request_data); //Creates an object that store the requisite information we need to send to wordpress
     //Step 1 of http://oauthbible.com (three legged) comes from oath.authorize
-    var data = querystring.stringify(authInfo); //THIS TOOK FOREVER TO FIGURE OUT turns out you need to send this info as a query string
+    var data = querystring.stringify(authInfo);
     var options = { //options required for the https request
         hostname: 'desertcommunityrobotics.com',
         port: 443,
@@ -42,17 +42,25 @@ function leg1(search, response, request){
 }
 function leg2(data, response){
     data=querystring.parse(data);
+    console.log("oauth_token = " + data["oauth_token"]);
     data = JSON.stringify(data);
-    console.log("authReturn: "+data);
+    response = easyHeader(response);
     response.write(data);
     response.end();
 }
 
-function authcallback(search, response, request){
+function leg3(search, response, request){
 
 }
 
-
+function easyHeader(response){
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    response.writeHead(200, {
+        "Content-Type": "text/JSON"
+    });
+    return response;
+}
 
 exports.authorize = leg1;
-exports.authcallback = authcallback;
+exports.authcallback = leg3;
