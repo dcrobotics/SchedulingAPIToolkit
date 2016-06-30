@@ -1,6 +1,7 @@
 var server = require("./server");
 var router = require("./router");
 var requestHandlers = require("./requestHandlers");
+var authentication = require("./authentication");
 
 var handle = {};
 
@@ -11,6 +12,8 @@ handle["/camps"] = requestHandlers.camps;
 handle["/classes"] = requestHandlers.classes;
 handle["/events"] = requestHandlers.events;
 handle["/testAuth"] = requestHandlers.testAuth;
-handle["/authcallback"] = requestHandlers.authcallback;
+handle["/authcallback"] = authentication.authcallback;
+handle["/authorize"] = authentication.authorize;
+
 
 server.start(router.route, handle);

@@ -1,18 +1,7 @@
 var querystring = require("querystring");
 var OAuth = require("oauth-1.0a");
 var https = require("https");
-
-var APIRef = {}
-// APIRef["camps"] = "/events";
-
-
-var oauth = OAuth({
-    consumer: {
-        public: 'bJJSUlPkEM7A',
-        secret: '84qDaRvAzwpyHIyizlpA1r7bV1GtTKfmZs1UFcRUkmChuWkY'
-    },
-    signature_method: 'HMAC-SHA1'
-});
+var nreq = require("./noderequester");
 
 var wp_scope="*";
 /* routing functions */
