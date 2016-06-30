@@ -31,6 +31,7 @@ function call(fn){
 function addRequest(url, callBackFunc, parse, params){
     var idx = reqs.length;
     reqs.push(requester(url, callBackFunc, parse, params, idx));
+    dispatch(idx);
     return idx;
 }
 
