@@ -35,8 +35,9 @@ function authorize(search, response, request){
         }
     };
 
-    var req = nreq.addRequest(options,authReturn, true, response);
-    nreq.writeRequest(req, data);
+    var rid = nreq.addRequest(options,authReturn, true, response);
+    nreq.writeRequest(rid, data);
+    nreq.endRequest(rid);
 
 }
 function authReturn(data, response){

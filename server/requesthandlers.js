@@ -2,7 +2,6 @@ var querystring = require("querystring");
 var OAuth = require("oauth-1.0a");
 var https = require("https");
 var nreq = require("./noderequester");
-
 var wp_scope="*";
 /* routing functions */
 
@@ -61,6 +60,7 @@ function testAuth(search, response, request){
 }
 
 //TODO: Clean up TK
+//request = the response we send
 function events(search, response, request) {
     var requrl = "https://desertcommunityrobotics.com/wp-json/ee/v4.8.29/events";
     https.get(requrl, function (res) {
@@ -79,9 +79,6 @@ function events(search, response, request) {
                 parsedObj[i]["ticket_link"]="https://desertcommunityrobotics.com/wp-json/ee/v4.8.36/tickets?include=TKT_name%26where[Datetime.Event.EVT_ID]="+parsedObj[i]["EVT_ID"];
                 // response.write("\t https://desertcommunityrobotics.com/wp-json/ee/v4.8.36/tickets?include=TKT_name%26where[Datetime.Event.EVT_ID]="+parsedObj[i]["EVT_ID"]+"\n");
             }
-
-
-
             response.write(JSON.stringify(parsedObj)); //Like I said, waiting until data retrieval ends. Shouldn't really slow anything down as this app should have a near-instant connection to the wp
             response.end();
         });
