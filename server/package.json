@@ -1,7 +1,7 @@
 {
   "name": "schedulingapitoolkit",
   "version": "1.0.0",
-  "description": "",
+  "description": "An abstraction between whatever wordpress plugin happens to handle course registration and scheduling at any given time and our internal systems",
   "main": "index.js",
   "dependencies": {
     "cookie-session": "^2.0.0-alpha.1",
