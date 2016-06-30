@@ -11,7 +11,6 @@ handle["/"] = requestHandlers.camps;
 handle["/camps"] = requestHandlers.camps;
 handle["/classes"] = requestHandlers.classes;
 handle["/events"] = requestHandlers.events;
-handle["/testAuth"] = requestHandlers.testAuth;
 handle["/authcallback"] = authentication.authcallback;
 handle["/authorize"] = authentication.authorize;
 

@@ -118,5 +118,4 @@ function easyHeader(response){
 exports.camps = camps;
 exports.classes = classes;
 exports.events = events;
-exports.testAuth = testAuth;
 exports.authcallback = authcallback;

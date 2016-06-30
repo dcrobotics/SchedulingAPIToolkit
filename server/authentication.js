@@ -50,7 +50,16 @@ function leg2(data, response){
 }
 
 function leg3(search, response, request){
-
+    var passback = querystring.parse(search);
+    var request_data = { //Options for oauth.authorize
+        url: 'https://desertcommunityrobotics.com/oauth1/access',
+        method: 'POST',
+        data: {
+            oauth_token: passback["oauth_token"],
+            oauth_verifier: passback["oauth_verifier"],
+            wp_scope: '*'
+        }
+    };
 }
 
 function easyHeader(response){
