@@ -13,6 +13,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Chuck Dries @ Desert Community Robotics",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcrobotics/SchedulingAPIToolkit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dcrobotics/SchedulingAPIToolkit/issues"
+  },
+  "homepage": "https://github.com/dcrobotics/SchedulingAPIToolkit#readme"
 }

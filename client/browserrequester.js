@@ -6,7 +6,7 @@
 //they aren't evaluated when we create/save them. We can populate an array with requesters and choose
 //to wait to dispatch them if we want. Kinda cool :)
 
-//TODO: investigate http://stackoverflow.com/questions/8164989/javascript-self-executing-anonymous-functions-and-callback for alternative syntax
+//TODO: Match noderequester, bake callback into request object. Extend xmlhttprequest maybe? That shouldn't be too hard.
 var reqs = [];
 
 function requester(url, callbackFunc, parse, params, idx) {
@@ -30,6 +30,11 @@ function call(fn){
 }
 function addRequest(url, callBackFunc, parse, params){
     var idx = reqs.length;
+    var xhr = new XMLHttpRequest;
+    xhr.cbf = function(){
+        callbackFunc(this.responseText, params, idx);
+    }
+    xhr.addEventListener("load", this.cbf); //will this work?
     reqs.push(requester(url, callBackFunc, parse, params, idx));
     dispatch(idx);
     return idx;
