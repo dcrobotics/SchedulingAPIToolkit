@@ -6,6 +6,7 @@ var nreq = require("./noderequester");
 var wp_scope="*";
 /* routing functions */
 
+
 //response = the response we send
 //request = the request that we recieved
 //search = filter parameters I think
