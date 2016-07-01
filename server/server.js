@@ -9,7 +9,7 @@ function start(route, handle) {
         console.log("Request for " + pathname + " received");
         route(handle, pathname, search, root, response, request);
     }
-    http.createServer(onRequest).listen(8888);
-    console.log("Server listening on port 8888");
+    http.createServer(onRequest).listen(8080);
+    console.log("Server listening on port 8080");
 }
 exports.start = start;
