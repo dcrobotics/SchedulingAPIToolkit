@@ -7,7 +7,7 @@ function insertInfo(info,template,parent,filter){
     var url;
     try{
         url = getURL(info);
-        var idx = addRequest(url,render,true,{p:parent,t:template});
+        var idx = addRequest(url+filter,render,true,{p:parent,t:template});
         dispatch(idx);
     } catch (error) {
         window.alert(error);
