@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AAAAAAAAAA</title>
+    <link rel="stylesheet" href="style/style.css"></link>
+    <script src="script/nunjucks.js"></script>
+    <script src="script/browserrequester.js"></script>
+</head>
+<body>
+    <div id="main">
+        <h1>Loading</h1>
+    </div>
+    <script>
+    //Eventually, I plan on moving all of this out so we have some kind of object that we can define that specifies what we want to see and my framework handles sending the proper requests and passing them into nunjucks
+    //set up nunjucks
+    nunjucks.configure({ autoescape: true });
+
+    //send a request
+    var idx = addRequest("https://node.desertcommunityrobotics.com/newevents", render, true,{})
+    dispatch(idx);
+
+    //render
+    function render(data, params, idx){
+        var main = document.getElementById("main");
+        var html = nunjucks.render('testtemplate.njk', { events: data });
+        main.innerHTML = html
+        console.log(data);
+        // window.alert(data);
+    }
+    </script>
+</body>
+</html>
