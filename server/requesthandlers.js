@@ -1,8 +1,9 @@
 //OUT OF DATE, SEE AUTHENTICATION.JS FOR PROPER REQUEST IMPLEMENTATION
 var querystring = require("querystring");
-var OAuth = require("oauth-1.0a");
 var https = require("https");
 var nreq = require("./noderequester");
+var WP = require("wpapi");
+var wp = new WP({ endpoint: 'https://desertcommunityrobotics.com/wp-json' });
 var wp_scope="*";
 /* routing functions */
 
@@ -14,6 +15,19 @@ var wp_scope="*";
 //TODO: clean this stuff up
 //DELETED testAuth(): moved functionality to authentication/leg1
 
+
+// trying to use the wpapi code
+function newevents(search, response, request){
+  wp.pages().get(function(err,data){
+    if ( err ) {
+    } else {
+//      console.log(data);
+      response = easyHeader(response);
+      response.write(JSON.stringify(data));
+      response.end();
+    }
+  });
+}
 //TODO: Clean up TK
 //request = the response we send
 function events(search, response, request) {
@@ -23,7 +37,8 @@ function events(search, response, request) {
         res.on("data", function (chunk) {
             resBody += chunk; //we're going to wait until we have everything to send anything in case we want to deserialize the JSON or modify it in some way
         });
-        res.on("end", function () {
+            res.on("end", function () {
+//            console.log(resBody);
             var parsedObj = JSON.parse(resBody); //parse the events
             response = easyHeader(response);
 
@@ -50,54 +65,6 @@ function camps(search, response, request) {
     response.write("Hello world! this request was made to /camps with the filter \"" + search +"\"");
     response.end();
 }
-function authcallback(search, response, request){
-    // console.log(request);\
-    var passback = querystring.parse(search);
-    var request_data = { //Options for oauth.authorize
-        url: 'https://desertcommunityrobotics.com/oauth1/access',
-        method: 'POST',
-        data: {
-            oauth_token: passback["oauth_token"],
-            oauth_verifier: passback["oauth_verifier"],
-            wp_scope: '*'
-        }
-    };
-    var authInfo = oauth.authorize(request_data);
-    console.log(authInfo);
-    var data = querystring.stringify(authInfo);
-    console.log(data);
-    var options = { //options required for the https request
-        hostname: 'desertcommunityrobotics.com',
-        port: 443,
-        path: '/oauth1/access',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(data)
-        }
-    };
-    var req = https.request(options, function(res){ //create the https request
-        var resBody = "";
-        res.on("data", function(d) { //get the response body and save it
-            resBody+=d;
-            // console.log("d: "+d);
-        });
-        res.on("end", function () {  //response is back, redirect the user and pass the oauth token.  SHOULD THIS BE POSTED?
-            response = easyHeader(response);
-
-            response.write(resBody);
-            response.end();
-        });
-    });
-    req.write(data);  //write the authorization info to the request
-    req.end();
-
-    req.on('error', (e) => {
-        console.error(e);
-    });
-
-
-}
 
 /* Useful functions */
 
@@ -119,4 +86,4 @@ function easyHeader(response){
 exports.camps = camps;
 exports.classes = classes;
 exports.events = events;
-exports.authcallback = authcallback;
+exports.newevents = newevents;
