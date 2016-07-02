@@ -15,7 +15,6 @@
     </div>
     <h1 id="loader">Loading</h1>
     <script>
-    //Eventually, I plan on moving all of this out so we have some kind of object that we can define that specifies what we want to see and my framework handles sending the proper requests and passing them into nunjucks
     //set up nunjucks
     nunjucks.configure({ autoescape: true });
 
@@ -35,6 +34,7 @@
     //     hideLoader();
     // }
 
+    //use our shiny new framework to handle everything!
     insertInfo("events", "testtemplate.njk", "main", "");
     </script>
 </body>
