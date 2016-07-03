@@ -1,4 +1,5 @@
 var infoReference = {}
+var env = new nunjucks.Environment(new nunjucks.WebLoader('/views'), { autoescape: true });
 
 infoReference["events"] = "https://node.desertcommunityrobotics.com/newevents";
 

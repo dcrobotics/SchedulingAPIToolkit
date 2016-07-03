@@ -1,5 +1,3 @@
-
-
 function hideLoader(){
     document.getElementById("loader").style.display = "none";
 }
@@ -20,7 +18,7 @@ function render(data, params){
     console.log(data);
     var parent = document.getElementById(params["p"]);
     var current = document.createElement("div");
-    var html = nunjucks.render(params.t,{results:data}); //results:data there must be a better way
+    var html = env.render(params.t,{results:data}); //results:data there must be a better way
     current.innerHTML = html;
     parent.appendChild(current);
     hideLoader();
