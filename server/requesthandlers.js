@@ -5,6 +5,8 @@ var nreq = require("./noderequester");
 var WP = require("wpapi");
 var wp = new WP({ endpoint: 'https://desertcommunityrobotics.com/wp-json' });
 var wp_scope="*";
+var apiPromise = WP.discover( 'https://desertcommunityrobotics.com' );
+const EE_JSON_VER = 'v4.8.36'
 /* routing functions */
 
 
@@ -20,12 +22,28 @@ var wp_scope="*";
 function newevents(search, response, request){
   wp.pages().get(function(err,data){
     if ( err ) {
+      console.log(err);
     } else {
 //      console.log(data);
       response = easyHeader(response);
       response.write(JSON.stringify(data));
       response.end();
     }
+  });
+}
+function discover(search, response, request){
+  apiPromise.then(function ( site ){
+    var evnts_epnt = "ee/" + EE_JSON_VER;
+    site.namespace( evnts_epnt ).events().then(function(data){
+  //    if ( err ) {
+  //      consold.log("Error getting " + evnts_epnt);
+  //      console.log(err);
+  //    } else {
+        response = easyHeader(response);
+        response.write(JSON.stringify(data));
+        response.end();
+ //     }
+    });
   });
 }
 //TODO: Clean up TK
@@ -76,7 +94,7 @@ function easyHeader(response){
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     response.writeHead(200, {
-        "Content-Type": "text/plain"
+        "Content-Type": "text/JSON"
     });
     return response;
 }
@@ -87,3 +105,4 @@ exports.camps = camps;
 exports.classes = classes;
 exports.events = events;
 exports.newevents = newevents;
+exports.discover = discover;
