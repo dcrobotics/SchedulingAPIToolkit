@@ -1,0 +1,13 @@
+<!-- See https://mozilla.github.io/nunjucks/templating.html for templating reference -->
+<h1>Bookly Events</h1>
+<ul>
+{% for event in results %}
+  <li><h2>{{ event.title.rendered }}</h2>
+      <ul>
+          <li>{{event.date | dateformat}}</li>
+      </ul>
+  </li>
+{% else %}
+  <li>This would display if the 'results' collection were empty</li>
+{% endfor %}
+</ul>
