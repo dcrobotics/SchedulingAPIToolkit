@@ -10,9 +10,12 @@ var handle = {};
 handle["/"] = requestHandlers.camps;
 handle["/camps/"] = requestHandlers.camps;
 handle["/classes/"] = requestHandlers.classes;
+handle["/oldevents/"] = requestHandlers.oldevents;
 handle["/events/"] = requestHandlers.events;
-handle["/newevents/"] = requestHandlers.newevents;
-handle["/discover/"] = requestHandlers.discover;
+handle["/event/"] = requestHandlers.event;
+handle["/datetime/"] = requestHandlers.datetime;
+
+
 
 function route(handle, pathname, search, root, response, request) {
     console.log("About to route a request for " + pathname);

@@ -19,7 +19,7 @@ const EE_JSON_EPNT = 'ee/v4.8.36'
 
 
 // trying to use the wpapi code
-function newevents(search, response, request){
+function pages(search, response, request){
   wp.pages().get(function(err,data){
     if ( err ) {
       console.log(err);
@@ -31,20 +31,39 @@ function newevents(search, response, request){
     }
   });
 }
-function discover(search, response, request){
+function events(search, response, request){
   console.log(request.url);
   apiPromise.then(function ( site ){
     site.namespace( EE_JSON_EPNT ).events().then(function(data){
         response = easyHeader(response);
         response.write(JSON.stringify(data));
         response.end();
- //     }
+    });
+  });
+}
+function event(search, response, request){
+  console.log(request.url);
+  apiPromise.then(function ( site ){
+    site.namespace( EE_JSON_EPNT ).events().id(5660).datetimes().then(function(data){
+        response = easyHeader(response);
+        response.write(JSON.stringify(data));
+        response.end();
+    });
+  });
+}
+function datetime(search, response, request){
+  console.log(request.url);
+  apiPromise.then(function ( site ){
+    site.namespace( EE_JSON_EPNT ).datetimes().id(2).then(function(data){
+        response = easyHeader(response);
+        response.write(JSON.stringify(data));
+        response.end();
     });
   });
 }
 //TODO: Clean up TK
 //request = the response we send
-function events(search, response, request) {
+function oldevents(search, response, request) {
     var requrl = "https://desertcommunityrobotics.com/wp-json/ee/v4.8.29/events";
     https.get(requrl, function (res) {
         var resBody = ""; //the response we get
@@ -100,5 +119,6 @@ function easyHeader(response){
 exports.camps = camps;
 exports.classes = classes;
 exports.events = events;
-exports.newevents = newevents;
-exports.discover = discover;
+exports.event = event;
+exports.datetime = datetime;
+exports.oldevents = oldevents;
