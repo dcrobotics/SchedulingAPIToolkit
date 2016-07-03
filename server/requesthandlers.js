@@ -6,7 +6,7 @@ var WP = require("wpapi");
 var wp = new WP({ endpoint: 'https://desertcommunityrobotics.com/wp-json' });
 var wp_scope="*";
 var apiPromise = WP.discover( 'https://desertcommunityrobotics.com' );
-const EE_JSON_VER = 'v4.8.36'
+const EE_JSON_EPNT = 'ee/v4.8.36'
 /* routing functions */
 
 
@@ -32,13 +32,9 @@ function newevents(search, response, request){
   });
 }
 function discover(search, response, request){
+  console.log(request.url);
   apiPromise.then(function ( site ){
-    var evnts_epnt = "ee/" + EE_JSON_VER;
-    site.namespace( evnts_epnt ).events().then(function(data){
-  //    if ( err ) {
-  //      consold.log("Error getting " + evnts_epnt);
-  //      console.log(err);
-  //    } else {
+    site.namespace( EE_JSON_EPNT ).events().then(function(data){
         response = easyHeader(response);
         response.write(JSON.stringify(data));
         response.end();
