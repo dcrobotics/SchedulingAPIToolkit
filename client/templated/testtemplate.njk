@@ -1,7 +1,11 @@
 <h1>Events</h1>
 <ul>
 {% for event in results %}
-  <li>{{ event.title.rendered }}</li>
+  <li><h2>{{ event.title.rendered }}</h2>
+      <ul>
+          <li>{{event.}}</li>
+      </ul>
+  </li>
 {% else %}
   <li>This would display if the 'events' collection were empty</li>
 {% endfor %}

@@ -76,7 +76,7 @@ function easyHeader(response){
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     response.writeHead(200, {
-        "Content-Type": "text/plain"
+        "Content-Type": "text/JSON"
     });
     return response;
 }
