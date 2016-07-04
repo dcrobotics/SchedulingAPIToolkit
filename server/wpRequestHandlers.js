@@ -3,9 +3,7 @@ var server = require('./server.js');
 var util = require('./util.js');
 
 function root(splitPath, query, response, request){
-  response = util.setHeader(response,util.contType.TEXT);
-  response.write('Welcome to DCR\'s node server' );
-  response.end();
+  util.sendResponse(response, util.contType.TEXT, 'Welcome to DCR\'s node server' )
 }
 // Get a list of pages on the server
 function pages(splitPath, query, response, request){
@@ -13,18 +11,14 @@ function pages(splitPath, query, response, request){
     if ( err ) {
       console.log(err);
     } else {
-//      console.log(data);
-      response = util.setHeader(response,util.contType.JSON);
-      response.write(JSON.stringify(data));
-      response.end();
+      //console.log(data);
+      util.sendResponse(response, util.contType.JSON, JSON.stringify(data) )
     }
   });
 }
 function refresh(splitPath, query, response, request){
-  server.wpEpDiscovery = WP.discover( 'https://desertcommunityrobotics.com' );
-  response = util.setHeader(response,util.contType.TEXT);
-  response.write('discovery data has been refreshed' );
-  response.end();
+  server.wpEpDiscovery = WP.discover( server.DATA_SITE );
+  util.sendResponse(response, util.contType.TEXT, 'Discovery data has been refreshed.' )
 }
 
 

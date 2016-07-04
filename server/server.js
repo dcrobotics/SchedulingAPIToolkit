@@ -7,9 +7,15 @@ var wpRequestHandlers = require('./wpRequestHandlers.js');
 var eeRequestHandlers = require('./eeRequestHandlers.js');
 
 // Create the wpapi JSON objects on startup
-var wpEp = new WP({ endpoint: 'https://desertcommunityrobotics.com/wp-json' });
-var wpEpDiscovery = WP.discover( 'https://desertcommunityrobotics.com' );
+const DATA_SITE = 'https://desertcommunityrobotics.com/'
+const WP_JSON_HEAD = 'wp-json/'
+const WP_JSON_EPNT = 'wp/v2'
+var wpEp = new WP({ endpoint: DATA_SITE + WP_JSON_HEAD });
+var wpEpDiscovery = WP.discover( DATA_SITE );
 // Export the wpapi hierarchy
+exports.DATA_SITE    = DATA_SITE;
+exports.WP_JSON_HEAD = WP_JSON_HEAD;
+exports.WP_JSON_EPNT = WP_JSON_EPNT;
 exports.wpEp = wpEp;
 exports.wpEpDiscovery = wpEpDiscovery;
 

@@ -24,6 +24,12 @@ function setHeader(response, type){
   }
   return response;
 }
+function sendResponse(response, type, responseData){
+  response = setHeader(response,type);
+  response.write(responseData );
+  response.end();
+}
 
-exports.setHeader = setHeader;
-exports.contType  = contType;
+exports.contType     = contType;
+exports.setHeader    = setHeader;
+exports.sendResponse = sendResponse;
