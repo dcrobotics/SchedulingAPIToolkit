@@ -1,8 +1,9 @@
 var WP = require('wpapi');
 var server = require('./server.js');
+var util = require('./util.js');
 
 function root(splitPath, query, response, request){
-  response = easyHeader(response);
+  response = util.setHeader(response,util.contType.TEXT);
   response.write('Welcome to DCR\'s node server' );
   response.end();
 }
@@ -13,23 +14,20 @@ function pages(splitPath, query, response, request){
       console.log(err);
     } else {
 //      console.log(data);
-      response = easyHeader(response);
+      response = util.setHeader(response,util.contType.JSON);
       response.write(JSON.stringify(data));
       response.end();
     }
   });
 }
-
-// Useful functions
-// ToDo create a lib file 
-function easyHeader(response){
-  response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  response.writeHead(200, {
-    'Content-Type': 'text/JSON'
-  });
-  return response;
+function refresh(splitPath, query, response, request){
+  server.wpEpDiscovery = WP.discover( 'https://desertcommunityrobotics.com' );
+  response = util.setHeader(response,util.contType.TEXT);
+  response.write('discovery data has been refreshed' );
+  response.end();
 }
+
 
 exports.root = root;
 exports.pages = pages;
+exports.refresh = refresh;

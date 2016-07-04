@@ -1,47 +1,45 @@
 var WP = require('wpapi');
+
 var server = require('./server.js');
+var util = require('./util.js');
+
 const EE_JSON_EPNT = 'ee/v4.8.36'
 
-function events(splitPath, query, response, request){
+function eeEvent(splitPath, query, response, request){
   console.log(request.url);
-  server.wpEpDiscovery.then(function ( site ){
-    site.namespace( EE_JSON_EPNT ).events().then(function(data){
-      response = easyHeader(response);
-      response.write(JSON.stringify(data));
-      response.end();
+  if (splitPath[2] == '' || splitPath[2] == undefined) {
+    server.wpEpDiscovery.then(function ( site ){
+      site.namespace( EE_JSON_EPNT ).events().then(function(data){
+        response = util.setHeader(response,util.contType.JSON);
+        response.write(JSON.stringify(data));
+        response.end();
+      });
     });
-  });
-}
-function event(splitPath, query, response, request){
-  console.log(request.url);
-  server.wpEpDiscovery.then(function ( site ){
-    site.namespace( EE_JSON_EPNT ).events().id(5660).datetimes().then(function(data){
-      response = easyHeader(response);
-      response.write(JSON.stringify(data));
-      response.end();
+  } else if (splitPath[3] == '' || splitPath[3] == undefined) {
+    server.wpEpDiscovery.then(function ( site ){
+      site.namespace( EE_JSON_EPNT ).events().id(parseInt(splitPath[2])).then(function(data){
+        response = util.setHeader(response,util.contType.JSON);
+        response.write(JSON.stringify(data));
+        response.end();
+      });
     });
-  });
+  } else {
+    console.log('Warning: Unknown event path: ' + request.url );
+    response = util.setHeader(response,util.contType.TEXT);
+    response.write('Unknown event path: ' + request.url );
+    response.end();
+  }
 }
 function datetime(splitPath, query, response, request){
   console.log(request.url);
   server.wpEpDiscovery.then(function ( site ){
     site.namespace( EE_JSON_EPNT ).datetimes().id(2).then(function(data){
-      response = easyHeader(response);
+      response = util.setHeader(response,util.contType.JSON);
       response.write(JSON.stringify(data));
       response.end();
     });
   });
 }
 
-function easyHeader(response){
-  response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  response.writeHead(200, {
-    'Content-Type': 'text/JSON'
-  });
-  return response;
-}
-
-exports.events = events;
-exports.event = event;
+exports.eeEvent = eeEvent;
 exports.datetime = datetime;

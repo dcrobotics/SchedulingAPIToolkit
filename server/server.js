@@ -1,7 +1,11 @@
 var http = require('http');
 var url = require('url');
-
 var WP = require('wpapi');
+
+var util = require('./util.js');
+var wpRequestHandlers = require('./wpRequestHandlers.js');
+var eeRequestHandlers = require('./eeRequestHandlers.js');
+
 // Create the wpapi JSON objects on startup
 var wpEp = new WP({ endpoint: 'https://desertcommunityrobotics.com/wp-json' });
 var wpEpDiscovery = WP.discover( 'https://desertcommunityrobotics.com' );
@@ -9,15 +13,13 @@ var wpEpDiscovery = WP.discover( 'https://desertcommunityrobotics.com' );
 exports.wpEp = wpEp;
 exports.wpEpDiscovery = wpEpDiscovery;
 
-var wpRequestHandlers = require('./wpRequestHandlers.js');
-var eeRequestHandlers = require('./eeRequestHandlers.js');
-
 var handle = {};
 // Assign handlers for the root of the pathname
 handle['']          = wpRequestHandlers.root;
 handle['pages']     = wpRequestHandlers.pages;
-handle['events']    = eeRequestHandlers.events;
-handle['event']     = eeRequestHandlers.event;
+handle['refresh']   = wpRequestHandlers.refresh;
+handle['events']    = eeRequestHandlers.eeEvent;
+handle['event']     = eeRequestHandlers.eeEvent;
 
 function route(splitPath, query, response, request) {
   console.log('Routing a request for /' + splitPath[1]);
