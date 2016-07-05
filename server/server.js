@@ -1,8 +1,9 @@
 var http = require('http');
-var url = require('url');
-var WP = require('wpapi');
+var url  = require('url');
+var WP   = require('wpapi');
 
-var util = require('./util.js');
+var util              = require('./util.js');
+var auth              = require('./auth.js');
 var wpRequestHandlers = require('./wpRequestHandlers.js');
 var eeRequestHandlers = require('./eeRequestHandlers.js');
 
@@ -10,7 +11,10 @@ var eeRequestHandlers = require('./eeRequestHandlers.js');
 const DATA_SITE = 'https://desertcommunityrobotics.com/'
 const WP_JSON_HEAD = 'wp-json/'
 const WP_JSON_EPNT = 'wp/v2'
-var wpEp = new WP({ endpoint: DATA_SITE + WP_JSON_HEAD });
+var wpEp = new WP({ endpoint: DATA_SITE + WP_JSON_HEAD,
+                    username: auth.WP_JSON_USER,
+                    password: auth.WP_JSON_PASS
+                 });
 var wpEpDiscovery = WP.discover( DATA_SITE );
 // Export the wpapi hierarchy
 exports.DATA_SITE    = DATA_SITE;
@@ -21,11 +25,18 @@ exports.wpEpDiscovery = wpEpDiscovery;
 
 var handle = {};
 // Assign handlers for the root of the pathname
-handle['']          = wpRequestHandlers.root;
-handle['pages']     = wpRequestHandlers.pages;
-handle['refresh']   = wpRequestHandlers.refresh;
-handle['events']    = eeRequestHandlers.eeEvent;
-handle['event']     = eeRequestHandlers.eeEvent;
+handle['']              = wpRequestHandlers.root;
+handle['pages']         = wpRequestHandlers.pages;
+handle['refresh']       = wpRequestHandlers.refresh;
+handle['events']        = eeRequestHandlers.eeEvent;
+handle['event']         = eeRequestHandlers.eeEvent;
+handle['datetimes']     = eeRequestHandlers.eeDateTime;
+handle['datetime']      = eeRequestHandlers.eeDateTime;
+handle['registrations'] = eeRequestHandlers.eeRegistration;
+handle['registration']  = eeRequestHandlers.eeRegistration;
+handle['attendees']     = eeRequestHandlers.eeAttendee;
+handle['attendee']      = eeRequestHandlers.eeAttendee;
+
 
 function route(splitPath, query, response, request) {
   console.log('Routing a request for /' + splitPath[1]);
