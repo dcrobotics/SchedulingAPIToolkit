@@ -26,7 +26,8 @@ exports.wpEpDiscovery = wpEpDiscovery;
 var handle = {};
 // Assign handlers for the root of the pathname
 handle['']              = wpRequestHandlers.root;
-handle['pages']         = wpRequestHandlers.pages;
+handle['pages']         = wpRequestHandlers.page;
+handle['page']          = wpRequestHandlers.page;
 handle['refresh']       = wpRequestHandlers.refresh;
 handle['events']        = eeRequestHandlers.eeEvent;
 handle['event']         = eeRequestHandlers.eeEvent;
@@ -38,11 +39,11 @@ handle['attendees']     = eeRequestHandlers.eeAttendee;
 handle['attendee']      = eeRequestHandlers.eeAttendee;
 
 
-function route(splitPath, query, response, request) {
+function route(request, splitPath, query, response) {
   console.log('Routing a request for /' + splitPath[1]);
   // Use the root of the pathname to determine a handler
   if (typeof handle[splitPath[1]] === 'function'){
-    handle[splitPath[1]](splitPath, query, response, request);
+    handle[splitPath[1]](request, splitPath, query, response);
   } else {
     console.log('No request handler found for ' + splitPath[1] + ' of ' + request.url);
     response.writeHead(404, {'Content-Type':'text/plain'});
@@ -57,7 +58,7 @@ function startServer() {
     var splitPath = path.split('/')
     var query = url.parse(request.url).query;
     console.log('Request for ' + path + ' received');
-    route(splitPath, query, response, request);
+    route(request, splitPath, query, response);
   }
   http.createServer(onRequest).listen(8080);
   console.log('Server listening on port 8080');

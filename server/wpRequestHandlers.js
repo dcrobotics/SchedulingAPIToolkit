@@ -2,26 +2,42 @@ var WP = require('wpapi');
 var server = require('./server.js');
 var util = require('./util.js');
 
-function root(splitPath, query, response, request){
-  util.sendResponse(response, util.contType.TEXT, 'Welcome to DCR\'s node server' )
+// *************************************************************************//
+function root(req, splitPath, query, rsp){
+  util.sendResponse(rsp, util.contType.TEXT, 'Welcome to DCR\'s node server' );
 }
-// Get a list of pages on the server
-function pages(splitPath, query, response, request){
-  server.wpEp.pages().get(function(err,data){
-    if ( err ) {
-      console.log(err);
-    } else {
-      //console.log(data);
-      util.sendResponse(response, util.contType.JSON, JSON.stringify(data) )
-    }
-  });
+// *************************************************************************//
+function page(req, splitPath, query, rsp){
+  // /page
+  if (splitPath[2] == '' || splitPath[2] == undefined) {
+    server.wpEp.pages().then(function (data){
+      rspD(data, rsp); }).catch(function (err){ rspE(req, err, rsp);
+    });
+  // /page/****
+  } else if (splitPath[3] == '' || splitPath[3] == undefined) {
+    // /attendee/ID
+    server.wpEp.pages().id(parseInt(splitPath[2])).then(function (data){
+      rspD(data, rsp); }).catch(function (err){ rspE(req, err, rsp);
+    });
+  // /page/unmatched_path
+  } else { rspE(req, "Unknown attendee path: '", rsp); }
 }
-function refresh(splitPath, query, response, request){
+// *************************************************************************//
+function refresh(req, splitPath, query, rsp){
   server.wpEpDiscovery = WP.discover( server.DATA_SITE );
-  util.sendResponse(response, util.contType.TEXT, 'Discovery data has been refreshed.' )
+  util.sendResponse(rsp, util.contType.TEXT, 'Discovery data has been refreshed.' );
 }
-
+// *************************************************************************//
+function rspD(data, rsp) {
+  util.sendResponse(rsp, util.contType.JSON, JSON.stringify(data) );
+}
+// *************************************************************************//
+function rspE(req, err, rsp) {
+  console.log('Error: ' + err + ' from: ' + req.url);
+  util.sendResponse(rsp, util.contType.TEXT, 'Error: ' + err + ' from: ' + req.url );
+}
+// *************************************************************************//
 
 exports.root = root;
-exports.pages = pages;
+exports.page = page;
 exports.refresh = refresh;
