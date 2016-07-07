@@ -4,6 +4,7 @@ function hideLoader(){
 
 function insertInfo(info,template,parent,filter){
     var url;
+    var re = /http:\/\//;
     try{
         url = getURL(info);
         var idx = addRequest(url+filter,render,true,{p:parent,t:template});
