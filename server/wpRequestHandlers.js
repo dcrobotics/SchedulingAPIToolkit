@@ -8,15 +8,21 @@ function root(req, splitPath, query, rsp){
 }
 // *************************************************************************//
 function page(req, splitPath, query, rsp){
+  var chainRet = '';
+
   // /page
   if (splitPath[2] == '' || splitPath[2] == undefined) {
-    server.wpEp.pages().then(function (data){
+    //  server.wpEp.pages().then(function (data){
+    chainRet = server.wpEp.pages();
+    chainRet.then(function (data){
       rspD(data, rsp); }).catch(function (err){ rspE(req, err, rsp);
     });
   // /page/****
   } else if (splitPath[3] == '' || splitPath[3] == undefined) {
     // /attendee/ID
-    server.wpEp.pages().id(parseInt(splitPath[2])).then(function (data){
+    chainRet = server.wpEp.pages();
+    chainRet = chainRet.id(parseInt(splitPath[2]));
+    chainRet.then(function (data){
       rspD(data, rsp); }).catch(function (err){ rspE(req, err, rsp);
     });
   // /page/unmatched_path

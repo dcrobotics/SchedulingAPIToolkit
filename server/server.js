@@ -40,7 +40,7 @@ handle['attendee']      = eeRequestHandlers.eeAttendee;
 
 
 function route(request, splitPath, query, response) {
-  console.log('Routing a request for /' + splitPath[1]);
+  //console.log('Routing a request for /' + splitPath[1]);
   // Use the root of the pathname to determine a handler
   if (typeof handle[splitPath[1]] === 'function'){
     handle[splitPath[1]](request, splitPath, query, response);
@@ -57,7 +57,7 @@ function startServer() {
     var path = url.parse(request.url).pathname;
     var splitPath = path.split('/')
     var query = url.parse(request.url).query;
-    console.log('Request for ' + path + ' received');
+    console.log('Request for ' + request.url + ' received from ' + request.headers['x-forwarded-for']);
     route(request, splitPath, query, response);
   }
   http.createServer(onRequest).listen(8080);
