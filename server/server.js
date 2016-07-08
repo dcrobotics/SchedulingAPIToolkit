@@ -10,25 +10,23 @@ var eeRequestHandlers = require('./eeRequestHandlers.js');
 // Create the wpapi JSON objects on startup
 const DATA_SITE = 'https://desertcommunityrobotics.com/'
 const WP_JSON_HEAD = 'wp-json/'
-const WP_JSON_EPNT = 'wp/v2'
 var wpEp = new WP({ endpoint: DATA_SITE + WP_JSON_HEAD,
                     username: auth.WP_JSON_USER,
                     password: auth.WP_JSON_PASS
                  });
 var wpEpDiscovery = WP.discover( DATA_SITE );
 // Export the wpapi hierarchy
-exports.DATA_SITE    = DATA_SITE;
-exports.WP_JSON_HEAD = WP_JSON_HEAD;
-exports.WP_JSON_EPNT = WP_JSON_EPNT;
-exports.wpEp = wpEp;
+exports.DATA_SITE     = DATA_SITE;
+exports.WP_JSON_HEAD  = WP_JSON_HEAD;
+exports.wpEp          = wpEp;
 exports.wpEpDiscovery = wpEpDiscovery;
 
 var handle = {};
 // Assign handlers for the root of the pathname
-handle['']              = wpRequestHandlers.root;
-handle['refresh']       = wpRequestHandlers.refresh;
-handle['wp']            = wpRequestHandlers.wpParse;
-handle['ee']            = eeRequestHandlers.eeParse;
+handle['']        = wpRequestHandlers.root;
+handle['refresh'] = wpRequestHandlers.refresh;
+handle['wp']      = wpRequestHandlers.wpParse;
+handle['ee']      = eeRequestHandlers.eeParse;
 
 function route(request, splitPath, query, response) {
   //console.log('Routing a request for /' + splitPath[1]);

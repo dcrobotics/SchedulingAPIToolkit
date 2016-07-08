@@ -12,7 +12,11 @@ function eeParse(req, splitPath, query, rsp){
 
   // Make sure discovery of is complete for custom endpoints
   server.wpEpDiscovery.then(function ( site ){
-    // Make sure the first parameter maps to an endpoint
+    if ( splitPath[2] == '' || splitPath[2] == undefined ) {
+      eeRoot(req, splitPath, query, rsp);
+      return;
+    }
+      // Make sure the first parameter maps to an endpoint
     if ( typeof site.namespace( EE_JSON_EPNT )[splitPath[2]] === "function" ) {
       chainRet = site.namespace( EE_JSON_EPNT )[splitPath[2]]();
       // See if the second parameter exists and make sure it is a proper number that could be an ID
@@ -49,10 +53,9 @@ function eeParse(req, splitPath, query, rsp){
 // *************************************************************************//
 function eeRoot(req, splitPath, query, rsp){
   // /ee does not work yet
-  server.wpEpDiscovery.then(function ( site ){
-    site.namespace( EE_JSON_EPNT ).then(function (data){
-    });
-  });
+  WP.site(server.DATA_SITE + server.WP_JSON_HEAD).root(EE_JSON_EPNT).then(function (data) {
+    rspD(data, rsp); 
+  }).catch(function (err){ rspE(req, err, rsp); });
 }
 // *************************************************************************//
 function rspD(data, rsp) {
