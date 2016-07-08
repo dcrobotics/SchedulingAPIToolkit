@@ -26,17 +26,9 @@ exports.wpEpDiscovery = wpEpDiscovery;
 var handle = {};
 // Assign handlers for the root of the pathname
 handle['']              = wpRequestHandlers.root;
-handle['pages']         = wpRequestHandlers.page;
-handle['page']          = wpRequestHandlers.page;
 handle['refresh']       = wpRequestHandlers.refresh;
-handle['events']        = eeRequestHandlers.eeEvent;
-handle['event']         = eeRequestHandlers.eeEvent;
-handle['datetimes']     = eeRequestHandlers.eeDateTime;
-handle['datetime']      = eeRequestHandlers.eeDateTime;
-handle['registrations'] = eeRequestHandlers.eeRegistration;
-handle['registration']  = eeRequestHandlers.eeRegistration;
-handle['attendees']     = eeRequestHandlers.eeAttendee;
-handle['attendee']      = eeRequestHandlers.eeAttendee;
+handle['wp']            = wpRequestHandlers.wpParse;
+handle['ee']            = eeRequestHandlers.eeParse;
 
 
 function route(request, splitPath, query, response) {

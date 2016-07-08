@@ -7,26 +7,26 @@ function root(req, splitPath, query, rsp){
   util.sendResponse(rsp, util.contType.TEXT, 'Welcome to DCR\'s node server' );
 }
 // *************************************************************************//
-function page(req, splitPath, query, rsp){
+function wpParse(req, splitPath, query, rsp){
   var chainRet = '';
+  console.log(splitPath);
 
-  // /page
-  if (splitPath[2] == '' || splitPath[2] == undefined) {
-    //  server.wpEp.pages().then(function (data){
-    chainRet = server.wpEp.pages();
-    chainRet.then(function (data){
-      rspD(data, rsp); }).catch(function (err){ rspE(req, err, rsp);
-    });
-  // /page/****
-  } else if (splitPath[3] == '' || splitPath[3] == undefined) {
-    // /attendee/ID
-    chainRet = server.wpEp.pages();
-    chainRet = chainRet.id(parseInt(splitPath[2]));
-    chainRet.then(function (data){
-      rspD(data, rsp); }).catch(function (err){ rspE(req, err, rsp);
-    });
-  // /page/unmatched_path
-  } else { rspE(req, "Unknown attendee path: '", rsp); }
+  if ( typeof server.wpEp[splitPath[2]] === "function" ) {
+    chainRet = server.wpEp[splitPath[2]]();
+    if ( splitPath[3] != '' && splitPath[3] != undefined ) {
+      if ( !isNaN(splitPath[3]) ) {
+        chainRet = chainRet.id(parseInt(splitPath[3]));
+      } else { 
+        rspE(req, "Invalid wpParse ID: '", rsp); 
+        return;
+      }
+    }
+  } else { 
+    rspE(req, "Unknown wpParse path: '", rsp); 
+    return;
+  }
+
+  chainRet.then(function (data){ rspD(data, rsp); }).catch(function (err){ rspE(req, err, rsp); });
 }
 // *************************************************************************//
 function refresh(req, splitPath, query, rsp){
@@ -45,5 +45,5 @@ function rspE(req, err, rsp) {
 // *************************************************************************//
 
 exports.root = root;
-exports.page = page;
+exports.wpParse = wpParse;
 exports.refresh = refresh;
