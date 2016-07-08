@@ -12,10 +12,17 @@
 </head>
 <body>
     <div id="main">
-
+        <div id="bookly" class="left floated">
+            <h1>Bookly</h1>
+        </div>
+        <div id="eventespresso" class="right floated">
+            <h1>Event Espresso</h1>
+        </div>
     </div>
     <h1 id="loader">Loading</h1>
     <script>
+
+    //How this stuff works:
 
     //set up nunjucks
 
@@ -35,8 +42,8 @@
     //     hideLoader();
     // }
 
-    //use our shiny new framework to handle everything!
-    insertInfo("events", "testtemplate.njk", "main", "");
+    //but we use our shiny new framework to handle everything!
+    insertInfo("events", "testtemplate.njk", "bookly", "");
     </script>
 </body>
 </html>
