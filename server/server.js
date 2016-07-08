@@ -30,7 +30,6 @@ handle['refresh']       = wpRequestHandlers.refresh;
 handle['wp']            = wpRequestHandlers.wpParse;
 handle['ee']            = eeRequestHandlers.eeParse;
 
-
 function route(request, splitPath, query, response) {
   //console.log('Routing a request for /' + splitPath[1]);
   // Use the root of the pathname to determine a handler

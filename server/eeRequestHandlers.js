@@ -24,7 +24,7 @@ function eeParse(req, splitPath, query, rsp){
             if ( typeof chainRet[splitPath[4]] === "function" ) {
               chainRet = chainRet[splitPath[4]]();
             } else {
-              rspE(req, "Invalid parseEE tertiary function: '", rsp); 
+              rspE(req, "Invalid parseEE tertiary path: '", rsp); 
               return;
             }
           }
@@ -65,4 +65,4 @@ function rspE(req, err, rsp) {
 }
 // *************************************************************************//
 
-exports.eeParse         = eeParse;
+exports.eeParse = eeParse;

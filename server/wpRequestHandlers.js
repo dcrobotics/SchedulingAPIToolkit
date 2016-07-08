@@ -22,7 +22,7 @@ function wpParse(req, splitPath, query, rsp){
       }
     }
   } else { 
-    rspE(req, "Unknown wpParse path: '", rsp); 
+    rspE(req, "Unknown parseEE primary path: '", rsp); 
     return;
   }
 
