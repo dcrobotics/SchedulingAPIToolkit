@@ -12,11 +12,14 @@ function eeParse(req, splitPath, query, rsp){
 
   // Make sure discovery of is complete for custom endpoints
   server.wpEpDiscovery.then(function ( site ){
+
+    // See if we are just displaying the root
     if ( splitPath[2] == '' || splitPath[2] == undefined ) {
       eeRoot(req, splitPath, query, rsp);
       return;
     }
-      // Make sure the first parameter maps to an endpoint
+
+    // build the endpoint
     if ( typeof site.namespace( EE_JSON_EPNT )[splitPath[2]] === "function" ) {
       chainRet = site.namespace( EE_JSON_EPNT )[splitPath[2]]();
       // See if the second parameter exists and make sure it is a proper number that could be an ID
@@ -28,17 +31,17 @@ function eeParse(req, splitPath, query, rsp){
             if ( typeof chainRet[splitPath[4]] === "function" ) {
               chainRet = chainRet[splitPath[4]]();
             } else {
-              rspE(req, "Invalid parseEE tertiary path: '", rsp); 
+              rspE(req, 'Invalid parseEE tertiary path: ', rsp); 
               return;
             }
           }
         } else { 
-          rspE(req, "Invalid parseEE ID: '", rsp); 
+          rspE(req, 'Invalid parseEE ID: ', rsp); 
           return;
         }
       }
     } else { 
-      rspE(req, "Unknown parseEE primary path: '", rsp); 
+      rspE(req, 'Unknown parseEE primary path: ', rsp); 
       return;
     }
 
@@ -46,6 +49,22 @@ function eeParse(req, splitPath, query, rsp){
     if ( authPaths.indexOf(splitPath[2]) > -1 || authPaths.indexOf(splitPath[4]) > -1) {
       chainRet = chainRet.auth(auth.WP_JSON_USER,auth.WP_JSON_PASS)
     }
+
+    // Handle query parameters
+    if ( query != null ) {
+      var splitQuery = query.split('&');
+      var arg;
+      for (ii = 0; ii < splitQuery.length; ii++){
+        args = splitQuery[ii].split('=');
+        if ( args[0] == '' || args[0] == undefined || args[1] == '' || args[1] == undefined) {
+          rspE(req, 'Invalid parameter parse: ' + splitQuery[ii] + 'from :' + query , rsp);
+          return;
+        } else { 
+          chainRet = chainRet.param(args[0],args[1]); 
+        }
+      }
+    }
+
     // Pull the data
     chainRet.then(function (data){ rspD(data, rsp); }).catch(function (err){ rspE(req, err, rsp); });
   });
