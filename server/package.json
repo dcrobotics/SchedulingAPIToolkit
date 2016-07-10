@@ -1,26 +1,26 @@
 {
-  "name": "schedulingapitoolkit",
+  "name": "server",
   "version": "1.0.0",
-  "description": "An abstraction between whatever wordpress plugin happens to handle course registration and scheduling at any given time and our internal systems",
-  "main": "index.js",
-  "dependencies": {
-    "cookie-session": "^2.0.0-alpha.1",
-    "connect": "^3.4.1",
-    "oauth-1.0a": "^1.0.1"
-  },
-  "devDependencies": {},
+  "description": "Desert Community Robotics Website API & Data Server",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "Chuck Dries @ Desert Community Robotics",
-  "license": "ISC",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dcrobotics/SchedulingAPIToolkit.git"
   },
+  "author": "Chuck & Kent",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/dcrobotics/SchedulingAPIToolkit/issues"
   },
-  "homepage": "https://github.com/dcrobotics/SchedulingAPIToolkit#readme"
+  "homepage": "https://github.com/dcrobotics/SchedulingAPIToolkit#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "mysql": "^2.11.1",
+    "passport": "^0.3.2",
+    "wpapi": "^0.8.0"
+  }
 }
