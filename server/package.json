@@ -20,7 +20,14 @@
   "dependencies": {
     "express": "^4.14.0",
     "mysql": "^2.11.1",
-    "passport": "^0.3.2",
-    "wpapi": "^0.8.0"
+    "wpapi": "^0.8.0",
+    "body-parser": "*",
+    "cookie-parser": "*",
+    "express-session": "*",
+    "bcrypt-nodejs": "*",
+    "ejs": "*",
+    "passport": "*",
+    "passport-local": "*",
+    "bookshelf": "^0.5"
   }
 }
