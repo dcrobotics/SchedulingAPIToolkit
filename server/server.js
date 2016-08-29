@@ -95,6 +95,14 @@ webServer.get('^\/signout\/?$', route.signOut);
 webServer.get('^\/wp|^\/ee|^\/refresh\/?$', function(req, rsp, next) {
   var timeDate = new Date();
   
+  var respond = function respond(data,err){
+    if (err) {
+      util.sendResponse(rsp, util.contType.TEXT, err );
+    } else {
+      util.sendResponse(rsp, util.contType.JSON, JSON.stringify(data));
+    }
+  };
+  
   console.log('Request for ' + req.url + ' received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
 
   if( !req.isAuthenticated() ) {
@@ -105,22 +113,10 @@ webServer.get('^\/wp|^\/ee|^\/refresh\/?$', function(req, rsp, next) {
     var query = url.parse(req.url).query;
     switch (splitPath[1]) {
       case 'wp':
-        wpRequestHandlers.wpParse(req, splitPath, query, function(data,err){
-          if (err) {
-            util.sendResponse(rsp, util.contType.TEXT, err );
-          } else {
-            util.sendResponse(rsp, util.contType.JSON, JSON.stringify(data));
-          }
-        });
+        wpRequestHandlers.wpParse(req, splitPath, query, respond);
         break;
       case 'ee':
-        eeRequestHandlers.eeParse(req, splitPath, query, function(data,err){
-          if (err) {
-            util.sendResponse(rsp, util.contType.TEXT, err );
-          } else {
-            util.sendResponse(rsp, util.contType.JSON, JSON.stringify(data));
-          }
-        });
+        eeRequestHandlers.eeParse(req, splitPath, query, respond);
         break;
       case 'refresh':
         wpEpDiscovery = WP.discover( DATA_SITE );
@@ -131,6 +127,8 @@ webServer.get('^\/wp|^\/ee|^\/refresh\/?$', function(req, rsp, next) {
     }
   }
 });
+
+
 
 /********************************/
 // 404 not found
