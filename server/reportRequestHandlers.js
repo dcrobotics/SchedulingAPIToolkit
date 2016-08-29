@@ -1,11 +1,12 @@
 var WP = require('wpapi');
 
 var server = require('./server.js');
+var util   = require('./util.js');
 var auth   = require('./auth.js');
 
 const EE_JSON_EPNT = 'ee/v4.8.36'
 
-function eeParse(req, splitPath, query, passFunc){
+function reportParse(req, splitPath, query, rsp){
   const authPaths = ['registrations', 'attendees', 'payments'];
   var chainRet = '';
 
@@ -14,7 +15,7 @@ function eeParse(req, splitPath, query, passFunc){
 
     // See if we are just displaying the root
     if ( splitPath[2] == '' || splitPath[2] == undefined ) {
-      eeRoot(req, passFunc);
+      eeRoot(req, splitPath, query, rsp);
       return;
     }
 
@@ -30,17 +31,17 @@ function eeParse(req, splitPath, query, passFunc){
             if ( typeof chainRet[splitPath[4]] === "function" ) {
               chainRet = chainRet[splitPath[4]]();
             } else {
-              passFunc('','eeParse Error: Unknown tertiary path: ' + splitPath[4] + ' from: ' + req.url);
+              rspE(req, 'Invalid parseEE tertiary path: ', rsp); 
               return;
             }
           }
         } else { 
-          passFunc('','eeParse Error: Invalid ID: ' + splitPath[3] + ' from: ' + req.url);
+          rspE(req, 'Invalid parseEE ID: ', rsp); 
           return;
         }
       }
     } else { 
-      passFunc('','eeParse Error: Unknown primary path: ' + splitPath[2] + ' from: ' + req.url);
+      rspE(req, 'Unknown parseEE primary path: ', rsp); 
       return;
     }
 
@@ -52,35 +53,38 @@ function eeParse(req, splitPath, query, passFunc){
     // Handle query parameters
     if ( query != null ) {
       var splitQuery = query.split('&');
+      var arg;
       for (ii = 0; ii < splitQuery.length; ii++){
         args = splitQuery[ii].split('=');
         if ( args[0] == '' || args[0] == undefined || args[1] == '' || args[1] == undefined) {
-          passFunc('','eeParse Error: Invalid parameter: ' + splitQuery[ii] + ' from: ' + req.url);
+          rspE(req, 'Invalid parameter parse: ' + splitQuery[ii] + 'from :' + query , rsp);
           return;
         } else { 
           chainRet = chainRet.param(args[0],args[1]); 
         }
       }
     }
+
     // Pull the data
-    chainRet.then(function (data){ 
-      passFunc(data,'');
-      return;
-    }).catch(function (err){ 
-      passFunc('','eeParse Error: Data fetch error: ' + err + ' from: ' + req.url);
-      return;
-    });
+    chainRet.then(function (data){ rspD(data, rsp); }).catch(function (err){ rspE(req, err, rsp); });
   });
-  return;
 }
 // *************************************************************************//
-function eeRoot(req, passFunc){
+function eeRoot(req, splitPath, query, rsp){
+  // /ee does not work yet
   WP.site(server.DATA_SITE + server.WP_JSON_HEAD).root(EE_JSON_EPNT).then(function (data) {
-    passFunc(data,'');
-  }).catch(function (err){
-    passFunc('','eeRoot Error: Data fetch error: ' + err + ' from: ' + req.url);
-  });
-  return;
+    rspD(data, rsp); 
+  }).catch(function (err){ rspE(req, err, rsp); });
 }
+// *************************************************************************//
+function rspD(data, rsp) {
+  util.sendResponse(rsp, util.contType.JSON, JSON.stringify(data) );
+}
+// *************************************************************************//
+function rspE(req, err, rsp) {
+  console.log('Error: ' + err + ' from: ' + req.url);
+  util.sendResponse(rsp, util.contType.TEXT, 'Error: ' + err + ' from: ' + req.url );
+}
+// *************************************************************************//
 
-exports.eeParse = eeParse;
+exports.reportParse = reportParse;

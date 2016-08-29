@@ -1,16 +1,15 @@
 var WP = require('wpapi');
 
 var server = require('./server.js');
-var util = require('./util.js');
 
 const WP_JSON_EPNT = 'wp/v2'
 
-function wpParse(req, splitPath, query, rsp){
+function wpParse(req, splitPath, query, passFunc){
   var chainRet = '';
 
   // See if we are just displaying the root
   if ( splitPath[2] == '' || splitPath[2] == undefined ) {
-    wpRoot(req, splitPath, query, rsp);
+    wpRoot(req, passFunc);
     return;
   }
 
@@ -21,12 +20,12 @@ function wpParse(req, splitPath, query, rsp){
       if ( !isNaN(splitPath[3]) ) {
         chainRet = chainRet.id(parseInt(splitPath[3]));
       } else { 
-        rspE(req, "Invalid wpParse ID: '", rsp); 
+        passFunc('','wpParse Error: Invalid ID: ' + splitPath[3] + ' from: ' + req.url);
         return;
       }
     }
   } else { 
-    rspE(req, "Unknown parseEE primary path: '", rsp); 
+    passFunc('','wpParse Error: Unknown primary path: ' + splitPath[2] + ' from: ' + req.url);
     return;
   }
 
@@ -37,7 +36,7 @@ function wpParse(req, splitPath, query, rsp){
     for (ii = 0; ii < splitQuery.length; ii++){
       args = splitQuery[ii].split('=');
       if ( args[0] == '' || args[0] == undefined || args[1] == '' || args[1] == undefined) {
-        rspE(req, 'Invalid parameter parse: ' + splitQuery[ii] + 'from :' + query , rsp);
+        passFunc('','wpParse Error: Invalid parameter: ' + splitQuery[ii] + ' from: ' + req.url);
         return;
       } else { 
         chainRet = chainRet.param(args[0],args[1]); 
@@ -46,22 +45,23 @@ function wpParse(req, splitPath, query, rsp){
   }
 
   // Pull the data
-  chainRet.then(function (data){ rspD(data, rsp); }).catch(function (err){ rspE(req, err, rsp); });
+  chainRet.then(function (data){ 
+    passFunc(data,'');
+    return;
+  }).catch(function (err){ 
+    passFunc('','eeParse Error: Data fetch error: ' + err + ' from: ' + req.url);
+    return;
+  });
+  return;
 }
 // *************************************************************************//
-function wpRoot(req, splitPath, query, rsp){
+function wpRoot(req, passFunc){
   WP.site(server.DATA_SITE + server.WP_JSON_HEAD).root(WP_JSON_EPNT).then(function (data) {
-    rspD(data, rsp); 
-  }).catch(function (err){ rspE(req, err, rsp); });;
-}
-// *************************************************************************//
-function rspD(data, rsp) {
-  util.sendResponse(rsp, util.contType.JSON, JSON.stringify(data) );
-}
-// *************************************************************************//
-function rspE(req, err, rsp) {
-  console.log('Error: ' + err + ' from: ' + req.url);
-  util.sendResponse(rsp, util.contType.TEXT, 'Error: ' + err + ' from: ' + req.url );
+    passFunc(data,'');
+  }).catch(function (err){ 
+    passFunc('','wpRoot Error: Data fetch error: ' + err + ' from: ' + req.url);
+  });
+  return;
 }
 
 exports.wpParse = wpParse;

@@ -11,15 +11,17 @@ var path = require('path');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
-var util              = require('./util.js');
-var auth              = require('./auth.js');
-var wpRequestHandlers = require('./wpRequestHandlers.js');
-var eeRequestHandlers = require('./eeRequestHandlers.js');
+var util                  = require('./util.js');
+var auth                  = require('./auth.js');
+
+// Request handlers
+var wpRequestHandlers     = require('./wpRequestHandlers.js');
+var eeRequestHandlers     = require('./eeRequestHandlers.js');
+var reportRequestHandlers = require('./reportRequestHandlers.js');
 
 // Auth modules
 var route = require('./route');
-var Model = require('./model');
-
+var model = require('./model');
 
 // Create the wpapi JSON objects on startup
 const DATA_SITE = 'https://desertcommunityrobotics.com/'
@@ -29,6 +31,7 @@ var wpEp = new WP({ endpoint: DATA_SITE + WP_JSON_HEAD,
                     password: auth.WP_JSON_PASS
                  });
 var wpEpDiscovery = WP.discover( DATA_SITE );
+
 // Export the wpapi hierarchy
 exports.DATA_SITE     = DATA_SITE;
 exports.WP_JSON_HEAD  = WP_JSON_HEAD;
@@ -40,7 +43,7 @@ var webServer = express();
 
 // Setup Passport
 passport.use(new LocalStrategy(function(username, password, done) {
-   new Model.User({username: username}).fetch().then(function(data) {
+   new model.User({username: username}).fetch().then(function(data) {
       var user = data;
       if(user === null) {
          return done(null, false, {message: 'Invalid username or password'});
@@ -54,15 +57,17 @@ passport.use(new LocalStrategy(function(username, password, done) {
       }
    });
 }));
+
 passport.serializeUser(function(user, done) {
   done(null, user.username);
 });
 
 passport.deserializeUser(function(username, done) {
-   new Model.User({username: username}).fetch().then(function(user) {
+   new model.User({username: username}).fetch().then(function(user) {
       done(null, user);
    });
 });
+
 webServer.set('port', process.env.PORT || WS_PORT);
 webServer.set('views', path.join(__dirname, 'views'));
 webServer.set('view engine', 'ejs');
@@ -74,57 +79,58 @@ webServer.use(session({ secret: 'secret strategic xxzzz code', resave: true, sav
 webServer.use(passport.initialize());
 webServer.use(passport.session());
 
-webServer.get('/', route.index);
-
+webServer.get('^\/$', route.index);
 // signin
-webServer.get('/signin/?', route.signIn);
-webServer.post('/signin/?', route.signInPost);
+webServer.get('^\/signin\/?$', route.signIn);
+webServer.post('^\/signin\/?$', route.signInPost);
 
 // signup
-webServer.get('/signup/?', route.signUp);
-webServer.post('/signup/?', route.signUpPost);
+webServer.get('^\/signup\/?$', route.signUp);
+webServer.post('^\/signup\/?$', route.signUpPost);
 // logout
-webServer.get('/signout/?', route.signOut);
+webServer.get('^\/signout\/?$', route.signOut);
 
 /********************************/
 // API Routes
-// /reresh route
-webServer.get('/refresh/?',function(req, rsp, next) {
-  if( !req.isAuthenticated() ) {
-    route.notFound404(req, rsp, next);
-  } else {
-    wpEpDiscovery = WP.discover( DATA_SITE );
-    util.sendResponse(rsp, util.contType.TEXT, 'Discovery data has been refreshed.' );
-  }
-});
+webServer.get('^\/wp|^\/ee|^\/refresh\/?$', function(req, rsp, next) {
+  var timeDate = new Date();
+  
+  console.log('Request for ' + req.url + ' received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
 
-// Wordpress default REST API
-webServer.get('/wp(/*)?',function(req, rsp, next) {
   if( !req.isAuthenticated() ) {
     route.notFound404(req, rsp, next);
   } else {
-    console.log('Request for ' + req.url + ' received from ' + req.headers['x-forwarded-for']);
     var path = url.parse(req.url).pathname;
     var splitPath = path.split('/')
     var query = url.parse(req.url).query;
-    console.log('Request for ' + req.url + ' received from ' + req.headers['x-forwarded-for']);
-    wpRequestHandlers.wpParse(req, splitPath, query, rsp);
+    switch (splitPath[1]) {
+      case 'wp':
+        wpRequestHandlers.wpParse(req, splitPath, query, function(data,err){
+          if (err) {
+            util.sendResponse(rsp, util.contType.TEXT, err );
+          } else {
+            util.sendResponse(rsp, util.contType.JSON, JSON.stringify(data));
+          }
+        });
+        break;
+      case 'ee':
+        eeRequestHandlers.eeParse(req, splitPath, query, function(data,err){
+          if (err) {
+            util.sendResponse(rsp, util.contType.TEXT, err );
+          } else {
+            util.sendResponse(rsp, util.contType.JSON, JSON.stringify(data));
+          }
+        });
+        break;
+      case 'refresh':
+        wpEpDiscovery = WP.discover( DATA_SITE );
+        util.sendResponse(rsp, util.contType.TEXT, 'Discovery data has been refreshed.' );
+        break;
+      default:
+        route.notFound404(req, rsp, next);
+    }
   }
 });
-
-// Event Espresso REST API
-webServer.get('/ee(/*)?',function(req, rsp, next) {
-  if( !req.isAuthenticated() ) {
-    route.notFound404(req, rsp, next);
-  } else {
-    console.log('Request for ' + req.url + ' received from ' + req.headers['x-forwarded-for']);
-    var path = url.parse(req.url).pathname;
-    var splitPath = path.split('/')
-    var query = url.parse(req.url).query;
-    console.log('Request for ' + req.url + ' received from ' + req.headers['x-forwarded-for']);
-    eeRequestHandlers.eeParse(req, splitPath, query, rsp);
-  }
- });
 
 /********************************/
 // 404 not found
@@ -134,4 +140,4 @@ webServer.listen(webServer.get('port'), function(err) {
   if(err) throw err;
   console.log('DCR API server listening on port ' + WS_PORT);
 });
-
+// *************************************************************************//
