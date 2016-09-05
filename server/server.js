@@ -92,7 +92,7 @@ webServer.get('^\/signout\/?$', route.signOut);
 
 /********************************/
 // API Routes
-webServer.get('^\/wp|^\/ee|^\/refresh\/?$', function(req, rsp, next) {
+webServer.get('^\/wp|^\/ee|^\/report|^\/refresh\/?$', function(req, rsp, next) {
   var timeDate = new Date();
   
   var respond = function respond(data,err){
@@ -105,9 +105,9 @@ webServer.get('^\/wp|^\/ee|^\/refresh\/?$', function(req, rsp, next) {
   
   console.log('Request for ' + req.url + ' received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
 
-  if( !req.isAuthenticated() ) {
-    route.notFound404(req, rsp, next);
-  } else {
+//  if( !req.isAuthenticated() ) {
+//    route.notFound404(req, rsp, next);
+//  } else {
     var path = url.parse(req.url).pathname;
     var splitPath = path.split('/')
     var query = url.parse(req.url).query;
@@ -118,6 +118,9 @@ webServer.get('^\/wp|^\/ee|^\/refresh\/?$', function(req, rsp, next) {
       case 'ee':
         eeRequestHandlers.eeParse(req, splitPath, query, respond);
         break;
+      case 'report':
+        reportRequestHandlers.reportParse(req, splitPath, query, respond);
+        break;
       case 'refresh':
         wpEpDiscovery = WP.discover( DATA_SITE );
         util.sendResponse(rsp, util.contType.TEXT, 'Discovery data has been refreshed.' );
@@ -125,7 +128,7 @@ webServer.get('^\/wp|^\/ee|^\/refresh\/?$', function(req, rsp, next) {
       default:
         route.notFound404(req, rsp, next);
     }
-  }
+//  }
 });
 
 

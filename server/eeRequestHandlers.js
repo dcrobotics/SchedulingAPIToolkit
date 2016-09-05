@@ -30,17 +30,17 @@ function eeParse(req, splitPath, query, passFunc){
             if ( typeof chainRet[splitPath[4]] === "function" ) {
               chainRet = chainRet[splitPath[4]]();
             } else {
-              passFunc('','eeParse Error: Unknown tertiary path: ' + splitPath[4] + ' from: ' + req.url);
+              passFunc([],'eeParse Error: Unknown tertiary path: ' + splitPath[4] + ' from: ' + req.url);
               return;
             }
           }
         } else { 
-          passFunc('','eeParse Error: Invalid ID: ' + splitPath[3] + ' from: ' + req.url);
+          passFunc([],'eeParse Error: Invalid ID: ' + splitPath[3] + ' from: ' + req.url);
           return;
         }
       }
     } else { 
-      passFunc('','eeParse Error: Unknown primary path: ' + splitPath[2] + ' from: ' + req.url);
+      passFunc([],'eeParse Error: Unknown primary path: ' + splitPath[2] + ' from: ' + req.url);
       return;
     }
 
@@ -55,7 +55,7 @@ function eeParse(req, splitPath, query, passFunc){
       for (ii = 0; ii < splitQuery.length; ii++){
         args = splitQuery[ii].split('=');
         if ( args[0] == '' || args[0] == undefined || args[1] == '' || args[1] == undefined) {
-          passFunc('','eeParse Error: Invalid parameter: ' + splitQuery[ii] + ' from: ' + req.url);
+          passFunc([],'eeParse Error: Invalid parameter: ' + splitQuery[ii] + ' from: ' + req.url);
           return;
         } else { 
           chainRet = chainRet.param(args[0],args[1]); 
@@ -63,11 +63,11 @@ function eeParse(req, splitPath, query, passFunc){
       }
     }
     // Pull the data
-    chainRet.then(function (data){ 
+    chainRet.then(function (data){
       passFunc(data,'');
       return;
     }).catch(function (err){ 
-      passFunc('','eeParse Error: Data fetch error: ' + err + ' from: ' + req.url);
+      passFunc([],'eeParse Error: Data fetch error: ' + err + ' from: ' + req.url);
       return;
     });
   });
@@ -78,7 +78,7 @@ function eeRoot(req, passFunc){
   WP.site(server.DATA_SITE + server.WP_JSON_HEAD).root(EE_JSON_EPNT).then(function (data) {
     passFunc(data,'');
   }).catch(function (err){
-    passFunc('','eeRoot Error: Data fetch error: ' + err + ' from: ' + req.url);
+    passFunc([],'eeRoot Error: Data fetch error: ' + err + ' from: ' + req.url);
   });
   return;
 }
