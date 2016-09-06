@@ -6,7 +6,6 @@ var auth   = require('./auth.js');
 const EE_JSON_EPNT = 'ee/v4.8.36'
 
 function eeParse(req, splitPath, query, passFunc){
-  const authPaths = ['registrations', 'attendees', 'payments'];
   var chainRet = '';
 
   // Make sure discovery of is complete for custom endpoints
@@ -45,7 +44,7 @@ function eeParse(req, splitPath, query, passFunc){
     }
 
     // See if we need to Auth for any of the fields in the path
-    if ( authPaths.indexOf(splitPath[2]) > -1 || authPaths.indexOf(splitPath[4]) > -1) {
+    if ( eeCheckAuth(splitPath) ) {
       chainRet = chainRet.auth(auth.WP_JSON_USER,auth.WP_JSON_PASS)
     }
 
@@ -83,4 +82,15 @@ function eeRoot(req, passFunc){
   return;
 }
 
-exports.eeParse = eeParse;
+function eeCheckAuth(splitPath){
+  const authPaths = ['registrations', 'attendees', 'payments'];
+
+  if ( authPaths.indexOf(splitPath[2]) > -1 || authPaths.indexOf(splitPath[4]) > -1) {
+    return true;
+  }
+  return false;
+  
+}
+
+exports.eeParse     = eeParse;
+exports.eeCheckAuth = eeCheckAuth;

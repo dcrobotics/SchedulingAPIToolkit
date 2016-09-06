@@ -14,4 +14,14 @@ function reportParse(req, splitPath, query, passFunc){
 }
 // *************************************************************************//
 
-exports.reportParse = reportParse;
+function reportCheckAuth(splitPath){
+  const authPaths = [];
+
+  if ( authPaths.indexOf(splitPath[2]) > -1 ) {
+    return true;
+  }
+  return false;
+}
+
+exports.reportParse     = reportParse;
+exports.reportCheckAuth = reportCheckAuth;

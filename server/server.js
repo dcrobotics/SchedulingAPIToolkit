@@ -94,6 +94,8 @@ webServer.get('^\/signout\/?$', route.signOut);
 // API Routes
 webServer.get('^\/wp|^\/ee|^\/report|^\/refresh\/?$', function(req, rsp, next) {
   var timeDate = new Date();
+  var checkAuth;
+  var parse;
   
   var respond = function respond(data,err){
     if (err) {
@@ -105,30 +107,37 @@ webServer.get('^\/wp|^\/ee|^\/report|^\/refresh\/?$', function(req, rsp, next) {
   
   console.log('Request for ' + req.url + ' received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
 
-//  if( !req.isAuthenticated() ) {
-//    route.notFound404(req, rsp, next);
-//  } else {
-    var path = url.parse(req.url).pathname;
-    var splitPath = path.split('/')
-    var query = url.parse(req.url).query;
-    switch (splitPath[1]) {
-      case 'wp':
-        wpRequestHandlers.wpParse(req, splitPath, query, respond);
-        break;
-      case 'ee':
-        eeRequestHandlers.eeParse(req, splitPath, query, respond);
-        break;
-      case 'report':
-        reportRequestHandlers.reportParse(req, splitPath, query, respond);
-        break;
-      case 'refresh':
-        wpEpDiscovery = WP.discover( DATA_SITE );
-        util.sendResponse(rsp, util.contType.TEXT, 'Discovery data has been refreshed.' );
-        break;
-      default:
-        route.notFound404(req, rsp, next);
-    }
-//  }
+  var path = url.parse(req.url).pathname;
+  var splitPath = path.split('/')
+  var query = url.parse(req.url).query;
+  switch (splitPath[1]) {
+    case 'wp':
+      checkAuth = wpRequestHandlers.wpCheckAuth; 
+      parse     = wpRequestHandlers.wpParse;
+      break;
+    case 'ee':
+      checkAuth = eeRequestHandlers.eeCheckAuth; 
+      parse     = eeRequestHandlers.eeParse;
+      break;
+    case 'report':
+      checkAuth = reportRequestHandlers.reportCheckAuth; 
+      parse     = reportRequestHandlers.reportParse;
+      break;
+    case 'refresh':
+      wpEpDiscovery = WP.discover( DATA_SITE );
+      util.sendResponse(rsp, util.contType.TEXT, 'Discovery data has been refreshed.' );
+      return;
+      break;
+    default:
+      route.notFound404(req, rsp, next);
+      return;
+  }
+  if (checkAuth(splitPath) & !req.isAuthenticated()){
+    route.notFound404(req, rsp, next);
+    return;
+  }
+  parse(req, splitPath, query, respond);
+
 });
 
 

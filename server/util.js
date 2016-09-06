@@ -31,7 +31,7 @@ function sendResponse(response, type, responseData){
 }
 
 var multiReq = function (numReqs, rspFunc) {
-  var classThis  = this;
+  var classThis  = this; // Keep track of this
   this.numReqs   = numReqs;
   this.rspFunc   = rspFunc;
   this.rdy       = [];
@@ -39,18 +39,23 @@ var multiReq = function (numReqs, rspFunc) {
   this.err       = [];
   this.passFunc  = [];
   this.label     = [];
-  var submitRsp  = function(data,err,idx) {
-    var rdy  = true;
+
+  // Function to collect data and when it is all there, submit the response
+  var submitRsp = function(data,err,idx) {
+    var rspRdy  = true;
     var rspErr  = '';
     var rspData = {};
+    // Store the data for this call
     classThis.rdy[idx]  = true;
     classThis.data[idx] = data;
     classThis.err[idx]  = err;
 
+    // Find out if all the data is here now
     for (ii = 0; ii < classThis.numReqs; ii++) { 
-      rdy = rdy & classThis.rdy[ii];
+      rspRdy = rspRdy & classThis.rdy[ii];
     }
-    if ( rdy ) {
+    // If it is merge it and send the response back
+    if ( rspRdy ) {
       for (ii = 0; ii < classThis.numReqs; ii++) {
         if ( classThis.err[ii] == '') {
           rspData[classThis.label[ii]] = classThis.data[ii];
@@ -65,6 +70,7 @@ var multiReq = function (numReqs, rspFunc) {
     }
   };
   
+  // Generate the passFunc callback functions with their index pre inserted
   var passFuncGenerator = function (idx){
     return function(data,err){
       submitRsp(data,err,idx);

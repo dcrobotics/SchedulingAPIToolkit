@@ -1,6 +1,7 @@
 var WP = require('wpapi');
 
 var server = require('./server.js');
+var auth   = require('./auth.js');
 
 const WP_JSON_EPNT = 'wp/v2'
 
@@ -29,7 +30,12 @@ function wpParse(req, splitPath, query, passFunc){
     return;
   }
 
-  // Handle query parameters
+    // See if we need to Auth for any of the fields in the path
+    if ( wpCheckAuth(splitPath) ) {
+      chainRet = chainRet.auth(auth.WP_JSON_USER,auth.WP_JSON_PASS)
+    }
+
+    // Handle query parameters
   if ( query != null ) {
     var splitQuery = query.split('&');
     var arg;
@@ -64,4 +70,15 @@ function wpRoot(req, passFunc){
   return;
 }
 
+function wpCheckAuth(splitPath){
+  const authPaths = ['users','revisions' ];
+
+  if ( authPaths.indexOf(splitPath[2]) > -1 || authPaths.indexOf(splitPath[4]) > -1) {
+    return true;
+  }
+  return false;
+  
+}
+
 exports.wpParse = wpParse;
+exports.wpCheckAuth = wpCheckAuth;
