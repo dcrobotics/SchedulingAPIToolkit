@@ -15,11 +15,20 @@ function wpParse(req, splitPath, query, passFunc){
   }
 
   // build the endpoint
-  if ( typeof server.wpEp[splitPath[2]] === "function" ) {
-    chainRet = server.wpEp[splitPath[2]]();
+  if ( typeof route.wpEp[splitPath[2]] === "function" ) {
+    chainRet = route.wpEp[splitPath[2]]();
     if ( splitPath[3] != '' && splitPath[3] != undefined ) {
       if ( !isNaN(splitPath[3]) ) {
         chainRet = chainRet.id(parseInt(splitPath[3]));
+        // See if the third parameter exists and make see if it maps to an endpoint
+        if ( splitPath[4] != '' && splitPath[4] != undefined ) {
+          if ( typeof chainRet[splitPath[4]] === "function" ) {
+            chainRet = chainRet[splitPath[4]]();
+          } else {
+            passFunc([],'eeParse Error: Unknown tertiary path: ' + splitPath[4] + ' from: ' + req.url);
+            return;
+          }
+        }
       } else { 
         passFunc([],'wpParse Error: Invalid ID: ' + splitPath[3] + ' from: ' + req.url);
         return;
