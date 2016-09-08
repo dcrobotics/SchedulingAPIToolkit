@@ -19,7 +19,7 @@ var apiRoute = function(req, rsp, next) {
   var timeDate = new Date();
   var checkAuth;
   var parse;
-  
+
   var respond = function respond(data,err){
     if (err) {
       util.sendResponse(rsp, util.contType.TEXT, err );
@@ -27,7 +27,7 @@ var apiRoute = function(req, rsp, next) {
       util.sendResponse(rsp, util.contType.JSON, JSON.stringify(data));
     }
   };
-  
+
   console.log('Request for ' + req.url + ' received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
 
   var path = url.parse(req.url).pathname;
@@ -35,15 +35,15 @@ var apiRoute = function(req, rsp, next) {
   var query = url.parse(req.url).query;
   switch (splitPath[1]) {
     case 'wp':
-      checkAuth = wpRequestHandlers.wpCheckAuth; 
+      checkAuth = wpRequestHandlers.wpCheckAuth;
       parse     = wpRequestHandlers.wpParse;
       break;
     case 'ee':
-      checkAuth = eeRequestHandlers.eeCheckAuth; 
+      checkAuth = eeRequestHandlers.eeCheckAuth;
       parse     = eeRequestHandlers.eeParse;
       break;
     case 'report':
-      checkAuth = reportRequestHandlers.reportCheckAuth; 
+      checkAuth = reportRequestHandlers.reportCheckAuth;
       parse     = reportRequestHandlers.reportParse;
       break;
     case 'refresh':

@@ -57,7 +57,7 @@ var multiReq = function (numReqs, rspFunc) {
     classThis.err[idx]  = err;
 
     // Find out if all the data is here now
-    for (ii = 0; ii < classThis.numReqs; ii++) { 
+    for (ii = 0; ii < classThis.numReqs; ii++) {
       rspRdy = rspRdy & classThis.rdy[ii];
     }
     // If it is merge it and send the response back
@@ -70,21 +70,21 @@ var multiReq = function (numReqs, rspFunc) {
             rspErr = rspErr + ' ';
           }
           rspErr = rspErr + 'Err[' + classThis.label[ii] + ']: ' + classThis.err[ii];
-        }        
+        }
       }
       classThis.rspFunc(rspData,rspErr);
     }
   };
-  
+
   // Generate the passFunc callback functions with their index pre inserted
   var passFuncGenerator = function (idx){
     return function(data,err){
       submitRsp(data,err,idx);
     };
   };
-  
+
   // Initialize arrays
-  for (ii = 0; ii < numReqs; ii++) { 
+  for (ii = 0; ii < numReqs; ii++) {
     this.rdy.push(false);
     this.data.push([]);
     this.err.push('');
@@ -92,7 +92,6 @@ var multiReq = function (numReqs, rspFunc) {
     this.passFunc.push(passFuncGenerator(ii));
   }
 };
-
 
 exports.contType     = contType;
 exports.setHeader    = setHeader;

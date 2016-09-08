@@ -33,12 +33,12 @@ function eeParse(req, splitPath, query, passFunc){
               return;
             }
           }
-        } else { 
+        } else {
           passFunc([],'eeParse Error: Invalid ID: ' + splitPath[3] + ' from: ' + req.url);
           return;
         }
       }
-    } else { 
+    } else {
       passFunc([],'eeParse Error: Unknown primary path: ' + splitPath[2] + ' from: ' + req.url);
       return;
     }
@@ -56,8 +56,8 @@ function eeParse(req, splitPath, query, passFunc){
         if ( args[0] == '' || args[0] == undefined || args[1] == '' || args[1] == undefined) {
           passFunc([],'eeParse Error: Invalid parameter: ' + splitQuery[ii] + ' from: ' + req.url);
           return;
-        } else { 
-          chainRet = chainRet.param(args[0],args[1]); 
+        } else {
+          chainRet = chainRet.param(args[0],args[1]);
         }
       }
     }
@@ -65,7 +65,7 @@ function eeParse(req, splitPath, query, passFunc){
     chainRet.then(function (data){
       passFunc(data,'');
       return;
-    }).catch(function (err){ 
+    }).catch(function (err){
       passFunc([],'eeParse Error: Data fetch error: ' + err + ' from: ' + req.url);
       return;
     });
@@ -89,7 +89,7 @@ function eeCheckAuth(splitPath){
     return true;
   }
   return false;
-  
+
 }
 
 exports.eeParse     = eeParse;

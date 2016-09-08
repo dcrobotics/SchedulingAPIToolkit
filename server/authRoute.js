@@ -39,7 +39,7 @@ var signInPost = function(req, rsp, next) {
                         failureRedirect: '/signin'}, function(err, user, info) {
     if( err ) {
       return rsp.render('signin', {title: 'Sign In', errorMessage: err.message});
-    } 
+    }
 
     if( !user ) {
       return rsp.render('signin', {title: 'Sign In', errorMessage: info.message});
