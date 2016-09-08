@@ -1,7 +1,5 @@
 //var http = require('http');
 var express = require('express');
-var url  = require('url');
-var WP   = require('wpapi');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
@@ -11,32 +9,11 @@ var path = require('path');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
-var util                  = require('./util.js');
-var auth                  = require('./auth.js');
-
-// Request handlers
-var wpRequestHandlers     = require('./wpRequestHandlers.js');
-var eeRequestHandlers     = require('./eeRequestHandlers.js');
-var reportRequestHandlers = require('./reportRequestHandlers.js');
+var route = require('./route.js');
 
 // Auth modules
-var route = require('./route');
+var authRoute = require('./authRoute');
 var model = require('./model');
-
-// Create the wpapi JSON objects on startup
-const DATA_SITE = 'https://desertcommunityrobotics.com/'
-const WP_JSON_HEAD = 'wp-json/'
-var wpEp = new WP({ endpoint: DATA_SITE + WP_JSON_HEAD,
-                    username: auth.WP_JSON_USER,
-                    password: auth.WP_JSON_PASS
-                 });
-var wpEpDiscovery = WP.discover( DATA_SITE );
-
-// Export the wpapi hierarchy
-exports.DATA_SITE     = DATA_SITE;
-exports.WP_JSON_HEAD  = WP_JSON_HEAD;
-exports.wpEp          = wpEp;
-exports.wpEpDiscovery = wpEpDiscovery;
 
 const WS_PORT = 8080;
 var webServer = express();
@@ -79,70 +56,22 @@ webServer.use(session({ secret: 'secret strategic xxzzz code', resave: true, sav
 webServer.use(passport.initialize());
 webServer.use(passport.session());
 
-webServer.get('^\/$', route.index);
+webServer.get('^\/$', authRoute.index);
 // signin
-webServer.get('^\/signin\/?$', route.signIn);
-webServer.post('^\/signin\/?$', route.signInPost);
+webServer.get('^\/signin\/?$', authRoute.signIn);
+webServer.post('^\/signin\/?$', authRoute.signInPost);
 
 // signup
-webServer.get('^\/signup\/?$', route.signUp);
-webServer.post('^\/signup\/?$', route.signUpPost);
+webServer.get('^\/signup\/?$', authRoute.signUp);
+webServer.post('^\/signup\/?$', authRoute.signUpPost);
 // logout
-webServer.get('^\/signout\/?$', route.signOut);
+webServer.get('^\/signout\/?$', authRoute.signOut);
 
 /********************************/
 // API Routes
-webServer.get('^\/wp|^\/ee|^\/report|^\/refresh\/?$', function(req, rsp, next) {
-  var timeDate = new Date();
-  var checkAuth;
-  var parse;
-  
-  var respond = function respond(data,err){
-    if (err) {
-      util.sendResponse(rsp, util.contType.TEXT, err );
-    } else {
-      util.sendResponse(rsp, util.contType.JSON, JSON.stringify(data));
-    }
-  };
-  
-  console.log('Request for ' + req.url + ' received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
-
-  var path = url.parse(req.url).pathname;
-  var splitPath = path.split('/')
-  var query = url.parse(req.url).query;
-  switch (splitPath[1]) {
-    case 'wp':
-      checkAuth = wpRequestHandlers.wpCheckAuth; 
-      parse     = wpRequestHandlers.wpParse;
-      break;
-    case 'ee':
-      checkAuth = eeRequestHandlers.eeCheckAuth; 
-      parse     = eeRequestHandlers.eeParse;
-      break;
-    case 'report':
-      checkAuth = reportRequestHandlers.reportCheckAuth; 
-      parse     = reportRequestHandlers.reportParse;
-      break;
-    case 'refresh':
-      wpEpDiscovery = WP.discover( DATA_SITE );
-      util.sendResponse(rsp, util.contType.TEXT, 'Discovery data has been refreshed.' );
-      return;
-      break;
-    default:
-      route.notFound404(req, rsp, next);
-      return;
-  }
-  if (checkAuth(splitPath) & !req.isAuthenticated()){
-    route.notFound404(req, rsp, next);
-    return;
-  }
-  parse(req, splitPath, query, respond);
-
-});
-
-
-
+webServer.get('^\/wp|^\/ee|^\/report|^\/refresh\/?$', route.apiRoute );
 /********************************/
+
 // 404 not found
 webServer.use(route.notFound404);
 

@@ -1,7 +1,7 @@
 var WP = require('wpapi');
 
-var server = require('./server.js');
-var auth   = require('./auth.js');
+var route = require('./route.js');
+var auth  = require('./auth.js');
 
 const EE_JSON_EPNT = 'ee/v4.8.36'
 
@@ -9,7 +9,7 @@ function eeParse(req, splitPath, query, passFunc){
   var chainRet = '';
 
   // Make sure discovery of is complete for custom endpoints
-  server.wpEpDiscovery.then(function ( site ){
+  route.wpEpDiscovery.then(function ( site ){
 
     // See if we are just displaying the root
     if ( splitPath[2] == '' || splitPath[2] == undefined ) {
@@ -74,7 +74,7 @@ function eeParse(req, splitPath, query, passFunc){
 }
 // *************************************************************************//
 function eeRoot(req, passFunc){
-  WP.site(server.DATA_SITE + server.WP_JSON_HEAD).root(EE_JSON_EPNT).then(function (data) {
+  WP.site(route.DATA_SITE + route.WP_JSON_HEAD).root(EE_JSON_EPNT).then(function (data) {
     passFunc(data,'');
   }).catch(function (err){
     passFunc([],'eeRoot Error: Data fetch error: ' + err + ' from: ' + req.url);

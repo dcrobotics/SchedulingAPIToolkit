@@ -1,7 +1,7 @@
 var WP = require('wpapi');
 
-var server = require('./server.js');
-var auth   = require('./auth.js');
+var route = require('./route.js');
+var auth  = require('./auth.js');
 
 const WP_JSON_EPNT = 'wp/v2'
 
@@ -30,10 +30,10 @@ function wpParse(req, splitPath, query, passFunc){
     return;
   }
 
-    // See if we need to Auth for any of the fields in the path
-    if ( wpCheckAuth(splitPath) ) {
-      chainRet = chainRet.auth(auth.WP_JSON_USER,auth.WP_JSON_PASS)
-    }
+  // See if we need to Auth for any of the fields in the path
+  if ( wpCheckAuth(splitPath) ) {
+    chainRet = chainRet.auth(auth.WP_JSON_USER,auth.WP_JSON_PASS)
+  }
 
     // Handle query parameters
   if ( query != null ) {
@@ -62,7 +62,7 @@ function wpParse(req, splitPath, query, passFunc){
 }
 // *************************************************************************//
 function wpRoot(req, passFunc){
-  WP.site(server.DATA_SITE + server.WP_JSON_HEAD).root(WP_JSON_EPNT).then(function (data) {
+  WP.site(route.DATA_SITE + route.WP_JSON_HEAD).root(WP_JSON_EPNT).then(function (data) {
     passFunc(data,'');
   }).catch(function (err){ 
     passFunc([],'wpRoot Error: Data fetch error: ' + err + ' from: ' + req.url);

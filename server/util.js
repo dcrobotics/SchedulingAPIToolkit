@@ -24,12 +24,18 @@ function setHeader(response, type){
   }
   return response;
 }
+
 function sendResponse(response, type, responseData){
   response = setHeader(response,type);
   response.write(responseData );
   response.end();
 }
 
+// Class to manage requests for data from multiple web pages
+// Set the number of requests that will be made and a callback
+// to return all of the data and errors when the retreivals complete
+// Set the label for each page called then make a call to retrieve
+// each of the pages using this classes passFunc as the callback for returned data
 var multiReq = function (numReqs, rspFunc) {
   var classThis  = this; // Keep track of this
   this.numReqs   = numReqs;
