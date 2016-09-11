@@ -55,10 +55,10 @@ var apiRoute = function(req, rsp, next) {
       notFound404(req, rsp, next);
       return;
   }
-  if (checkAuth(splitPath) & !req.isAuthenticated()){
-    notFound404(req, rsp, next);
-    return;
-  }
+ // if (checkAuth(splitPath) & !req.isAuthenticated()){
+ //   notFound404(req, rsp, next);
+ //   return;
+ // }
   parse(req, splitPath, query, respond);
 
 };

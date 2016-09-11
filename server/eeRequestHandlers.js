@@ -43,8 +43,8 @@ function eeParse(req, splitPath, query, passFunc){
       return;
     }
 
-    // See if we need to Auth for any of the fields in the path
-    if ( eeCheckAuth(splitPath) ) {
+    // Automatically send authentication of the user is authenticated
+    if ( req.isAuthenticated() ) {
       chainRet = chainRet.auth(auth.WP_JSON_USER,auth.WP_JSON_PASS)
     }
 
