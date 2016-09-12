@@ -4,7 +4,7 @@ var contType = {
   JSON : 2
 }
 
-function setHeader(response, type){
+var setHeader = function setHeader(response, type){
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   switch (type){
@@ -25,7 +25,7 @@ function setHeader(response, type){
   return response;
 }
 
-function sendResponse(response, type, responseData){
+var sendResponse = function sendResponse(response, type, responseData){
   response = setHeader(response,type);
   response.write(responseData );
   response.end();
@@ -33,7 +33,7 @@ function sendResponse(response, type, responseData){
 
 
 // Function to collect data and when it is all there, submit the response
-function submitRsp(data,err,myIdx, myThis) {
+var submitRsp = function submitRsp(data,err,myIdx, myThis) {
   var rspRdy  = true;
   var rspErr  = '';
   var rspData = {};
@@ -63,7 +63,7 @@ function submitRsp(data,err,myIdx, myThis) {
 };
 
 // Generate the passFunc callback functions with their index pre inserted
-var passFuncGenerator = function (myIdx,myThis){
+var passFuncGenerator = function passFuncGenerator(myIdx,myThis){
   return function(data,err){
     submitRsp(data,err,myIdx,myThis);
   };
@@ -74,7 +74,7 @@ var passFuncGenerator = function (myIdx,myThis){
 // to return all of the data and errors when the retreivals complete
 // Set the label for each page called then make a call to retrieve
 // each of the pages using this classes passFunc as the callback for returned data
-var multiReq = function (numReqs, rspFunc) {
+var multiReq = function multiReq(numReqs, rspFunc) {
   this.numReqs   = 0;
   this.rdy       = [];
   this.data      = [];
@@ -86,7 +86,7 @@ var multiReq = function (numReqs, rspFunc) {
   this.addReqs(numReqs, rspFunc);
 };
 
-multiReq.prototype.addReqs = function(numAddReqs,rspFunc) {
+multiReq.prototype.addReqs = function addReqs(numAddReqs,rspFunc) {
   var startReqs = this.numReqs
   this.numReqs  += numAddReqs;
   this.rspFunc  = rspFunc;

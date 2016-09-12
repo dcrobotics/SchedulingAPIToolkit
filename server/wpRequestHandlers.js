@@ -5,7 +5,16 @@ var auth  = require('./auth.js');
 
 const WP_JSON_EPNT = 'wp/v2'
 
-function wpParse(req, splitPath, query, passFunc){
+var wpRoot = function wpRoot(req, passFunc){
+  WP.site(route.DATA_SITE + route.WP_JSON_HEAD).root(WP_JSON_EPNT).then(function (data) {
+    passFunc(data,'');
+  }).catch(function (err){ 
+    passFunc([],'wpRoot Error: Data fetch error: ' + err + ' from: ' + req.url);
+  });
+  return;
+}
+
+var wpParse = function wpParse(req, splitPath, query, passFunc){
   var chainRet = '';
 
   // See if we are just displaying the root
@@ -70,16 +79,8 @@ function wpParse(req, splitPath, query, passFunc){
   return;
 }
 // *************************************************************************//
-function wpRoot(req, passFunc){
-  WP.site(route.DATA_SITE + route.WP_JSON_HEAD).root(WP_JSON_EPNT).then(function (data) {
-    passFunc(data,'');
-  }).catch(function (err){ 
-    passFunc([],'wpRoot Error: Data fetch error: ' + err + ' from: ' + req.url);
-  });
-  return;
-}
 
-function wpCheckAuth(splitPath){
+var wpCheckAuth = function wpCheckAuth(splitPath){
   const authPaths = ['users','revisions' ];
 
   if ( authPaths.indexOf(splitPath[2]) > -1 || authPaths.indexOf(splitPath[4]) > -1) {

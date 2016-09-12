@@ -5,7 +5,16 @@ var auth  = require('./auth.js');
 
 const EE_JSON_EPNT = 'ee/v4.8.36'
 
-function eeParse(req, splitPath, query, passFunc){
+var eeRoot = function eeRoot(req, passFunc){
+  WP.site(route.DATA_SITE + route.WP_JSON_HEAD).root(EE_JSON_EPNT).then(function (data) {
+    passFunc(data,'');
+  }).catch(function (err){
+    passFunc([],'eeRoot Error: Data fetch error: ' + err + ' from: ' + req.url);
+  });
+  return;
+}
+
+var eeParse = function eeParse(req, splitPath, query, passFunc){
   var chainRet = '';
 
   // Make sure discovery of is complete for custom endpoints
@@ -73,16 +82,7 @@ function eeParse(req, splitPath, query, passFunc){
   return;
 }
 // *************************************************************************//
-function eeRoot(req, passFunc){
-  WP.site(route.DATA_SITE + route.WP_JSON_HEAD).root(EE_JSON_EPNT).then(function (data) {
-    passFunc(data,'');
-  }).catch(function (err){
-    passFunc([],'eeRoot Error: Data fetch error: ' + err + ' from: ' + req.url);
-  });
-  return;
-}
-
-function eeCheckAuth(splitPath){
+var eeCheckAuth = function eeCheckAuth(splitPath){
   const authPaths = ['registrations', 'attendees', 'payments'];
 
   if ( authPaths.indexOf(splitPath[2]) > -1 || authPaths.indexOf(splitPath[4]) > -1) {

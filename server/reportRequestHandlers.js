@@ -1,7 +1,7 @@
 var eeRequestHandlers     = require('./eeRequestHandlers.js');
 var util                  = require('./util.js');
 
-var getAnswers = function(req, mReq,regLbl,rspFunc){
+var getAnswers = function getAnswers(req, mReq,regLbl,rspFunc){
   return function(data,err){
     if (err != ''){
       rspFunc(data,err); // There has been an error dont bother parsing
@@ -21,7 +21,7 @@ var getAnswers = function(req, mReq,regLbl,rspFunc){
     return;
   };
 }
-var getRoster = function(req, splitPath, query, passFunc){
+var getRoster = function getRoster(req, splitPath, query, passFunc){
   if ( splitPath[3] != '' && splitPath[3] != undefined ) {
     if ( !isNaN(splitPath[3]) ) {
       var EVT_ID = splitPath[3];
@@ -44,7 +44,7 @@ var getRoster = function(req, splitPath, query, passFunc){
   return;
 }
 
-function reportParse(req, splitPath, query, passFunc){
+var reportParse = function reportParse(req, splitPath, query, passFunc){
 
   switch (splitPath[2]) {
     case 'roster':
@@ -58,7 +58,7 @@ function reportParse(req, splitPath, query, passFunc){
 }
 // *************************************************************************//
 
-function reportCheckAuth(splitPath){
+var reportCheckAuth = function reportCheckAuth(splitPath){
   const authPaths = [];
 
   if ( authPaths.indexOf(splitPath[2]) > -1 ) {

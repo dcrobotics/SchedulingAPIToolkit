@@ -15,7 +15,13 @@ var wpRequestHandlers     = require('./wpRequestHandlers.js');
 var eeRequestHandlers     = require('./eeRequestHandlers.js');
 var reportRequestHandlers = require('./reportRequestHandlers.js');
 
-var apiRoute = function(req, rsp, next) {
+// 404 not found
+var notFound404 = function notFound404(req, rsp, next) {
+  rsp.status(404);
+  rsp.render('404', {title: '404 Not Found'});
+};
+
+var apiRoute = function apiRoute(req, rsp, next) {
   var timeDate = new Date();
   var checkAuth;
   var parse;
@@ -61,12 +67,6 @@ var apiRoute = function(req, rsp, next) {
  // }
   parse(req, splitPath, query, respond);
 
-};
-
-// 404 not found
-var notFound404 = function(req, rsp, next) {
-  rsp.status(404);
-  rsp.render('404', {title: '404 Not Found'});
 };
 
 // Route exports
