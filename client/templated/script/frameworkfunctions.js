@@ -1,3 +1,10 @@
+var root = "https://node.desertcommunityrobotics.com/";
+function getEEURL(){
+    return root + "ee/";
+}
+function getEventsURL(){
+    return getEEURL()+"events/";
+}
 function hideLoader(){
     document.getElementById("loader").style.display = "none";
 }

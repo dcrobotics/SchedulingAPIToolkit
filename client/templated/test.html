@@ -12,38 +12,16 @@
 </head>
 <body>
     <div id="main">
-        <div id="bookly" class="left floated">
-            <h1>Bookly</h1>
+        <div id="bookly" class="">
+
         </div>
-        <div id="eventespresso" class="right floated">
-            <h1>Event Espresso</h1>
+        <div id="eventespresso" class="">
+
         </div>
     </div>
     <h1 id="loader">Loading</h1>
     <script>
-
-    //How this stuff works:
-
-    //set up nunjucks
-
-    //send a request
-    // var idx = addRequest("https://node.desertcommunityrobotics.com/newevents", render, true,{})
-    // dispatch(idx);
-
-
-    //render
-    // function render(data, params, idx){
-    //     var div = document.createElement('div');
-    //     var main = document.getElementById("main");
-    //     var html = nunjucks.render('testtemplate.njk', { events: data });
-    //     main.appendChild(div);
-    //     div.innerHTML = html
-    //     console.log(data);
-    //     hideLoader();
-    // }
-
-    //but we use our shiny new framework to handle everything!
-    insertInfo("events", "testtemplate.njk", "bookly", "");
+    insertInfo("registrants", "testtemplate.njk", "eventespresso", "");
     </script>
 </body>
 </html>

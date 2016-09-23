@@ -9,9 +9,12 @@ body {
 h1, h2, h3 {
     line-height: 1.2;
 }
-.left{
-    float: left;
+.listItem{
+    /*color: blue;*/
 }
-.right{
-    float: right;
+table{
+    margin: 10px;
+}
+td{
+    margin: 30px;
 }

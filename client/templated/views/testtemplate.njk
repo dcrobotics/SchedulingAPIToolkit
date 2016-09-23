@@ -1,10 +1,17 @@
 <!-- See https://mozilla.github.io/nunjucks/templating.html for templating reference -->
-<ul>
-{% for event in results %}
-  <li><h2>{{ event.title.rendered }}</h2>
-      <p>{{event.date | dateformat}}</p>
-  </li>
-{% else %}
-  <li>This would display if the 'results' collection were empty</li>
-{% endfor %}
-</ul>
+
+<table>
+    <tr>
+        <td>EE ID</td>
+        <td>Full Name</td>
+        <td>Email</td>
+    {% for attendee in results %}
+    <tr>
+        <td>{{attendee.ATT_ID}}</td>
+        <td>{{attendee.ATT_full_name }}</td>
+        <td>{{attendee.ATT_email}}</td>
+    </tr>
+    {% else %}
+      <li>This would display if the 'results' collection were empty</li>
+    {% endfor %}
+</table>
