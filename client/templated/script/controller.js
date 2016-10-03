@@ -1,7 +1,7 @@
 var infoReference = {}
 var env = new nunjucks.Environment(new nunjucks.WebLoader('/views'), { autoescape: true });
 
-infoReference["events"] = "https://node.desertcommunityrobotics.com/newevents";
+infoReference["registrants"] = "https://node.desertcommunityrobotics.com/events/5682/attendees";
 
 function getURL(info){
     if(typeof infoReference[info] === "string"){
