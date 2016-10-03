@@ -77,6 +77,6 @@ webServer.use(route.notFound404);
 
 webServer.listen(webServer.get('port'), function(err) {
   if(err) throw err;
-  console.log('DCR API server listening on port ' + WS_PORT);
+  console.log('WB API server listening on port ' + WS_PORT);
 });
 // *************************************************************************//

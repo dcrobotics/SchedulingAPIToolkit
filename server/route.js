@@ -4,7 +4,7 @@ var url  = require('url');
 var util  = require('./util.js');
 
 // Create the wpapi JSON objects
-const DATA_SITE = 'https://desertcommunityrobotics.com/'
+const DATA_SITE = 'https://waybright.com/'
 const WP_JSON_HEAD = 'wp-json/'
 var wpEp = new WP({ endpoint: DATA_SITE + WP_JSON_HEAD,
                  });

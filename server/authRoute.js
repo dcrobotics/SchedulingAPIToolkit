@@ -13,7 +13,7 @@ var route = require('./route.js');
 var index = function(req, rsp, next) {
   if( !req.isAuthenticated() ) {
     console.log('Request for ' + req.url + ' received from ' + req.headers['x-forwarded-for']);
-    util.sendResponse(rsp, util.contType.TEXT, 'Welcome to DCR\'s node server' );
+    util.sendResponse(rsp, util.contType.TEXT, 'Welcome to WayBright\'s node server' );
   } else {
 
     var user = req.user;
