@@ -1,3 +1,4 @@
+var nunjucks = require('nunjucks');
 var WP = require('wpapi');
 var url  = require('url');
 
@@ -18,7 +19,7 @@ var reportRequestHandlers = require('./reportRequestHandlers.js');
 // 404 not found
 var notFound404 = function notFound404(req, rsp, next) {
   rsp.status(404);
-  rsp.render('404', {title: '404 Not Found'});
+  rsp.render('404.njk', {title: '404 Not Found'});
 };
 
 var apiRoute = function apiRoute(req, rsp, next) {

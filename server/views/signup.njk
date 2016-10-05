@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title><%= title %></title>
+    <title>{{ title }}</title>
   </head>
   <body>
     <h2>Register Form</h2>
     <form method="post" action="/signup">
-      <% if(typeof(errorMessage) !== 'undefined') {%>
-      <span><%= errorMessage %></span>
-      <% } %>
+      <span>{{ errorMessage }}</span>
       <p>
         <label for="username">username</label>
         <input type="text" name="username" id="username"

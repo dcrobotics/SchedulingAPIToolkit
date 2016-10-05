@@ -4,10 +4,10 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var bcrypt = require('bcrypt-nodejs');
-var ejs = require('ejs');
 var path = require('path');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var nunjucks = require('nunjucks');
 
 var route = require('./route.js');
 
@@ -17,6 +17,12 @@ var model = require('./model');
 
 const WS_PORT = 8080;
 var webServer = express();
+
+// Setup Nunjucks
+nunjucks.configure('views', {
+    autoescape: true,
+    express: webServer
+});
 
 // Setup Passport
 passport.use(new LocalStrategy(function(username, password, done) {
@@ -46,8 +52,6 @@ passport.deserializeUser(function(username, done) {
 });
 
 webServer.set('port', process.env.PORT || WS_PORT);
-webServer.set('views', path.join(__dirname, 'views'));
-webServer.set('view engine', 'ejs');
 webServer.use(cookieParser());
 webServer.use(bodyParser.urlencoded({extended: true}));
 webServer.use(bodyParser.json());
@@ -73,6 +77,7 @@ webServer.get('^\/wp|^\/ee|^\/report|^\/refresh\/?$', route.apiRoute );
 /********************************/
 
 // 404 not found
+//webServer.use(route.notFound404);
 webServer.use(route.notFound404);
 
 webServer.listen(webServer.get('port'), function(err) {
