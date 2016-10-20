@@ -8,6 +8,7 @@ var path = require('path');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var nunjucks = require('nunjucks');
+var cors = require('cors');
 
 var route = require('./route.js');
 
@@ -17,6 +18,16 @@ var model = require('./model');
 
 const WS_PORT = 8080;
 var webServer = express();
+
+var whitelist = ['https://waybright.com', 'https://waybright.com/'];
+var corsOptions = {
+ origin: function(origin, callback){
+   var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+   callback(null, originIsWhitelisted);
+ }
+};
+
+
 
 // Setup Nunjucks
 nunjucks.configure('views', {
@@ -52,6 +63,7 @@ passport.deserializeUser(function(username, done) {
 });
 
 webServer.set('port', process.env.PORT || WS_PORT);
+webServer.use(cors(corsOptions));
 webServer.use(cookieParser());
 webServer.use(bodyParser.urlencoded({extended: true}));
 webServer.use(bodyParser.json());

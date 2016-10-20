@@ -35,19 +35,26 @@ var signIn = function(req, rsp, next) {
 // sign in
 // POST
 var signInPost = function(req, rsp, next) {
+  var timeDate = new Date();
+
+
   passport.authenticate('local', { successRedirect: '/',
                         failureRedirect: '/signin'}, function(err, user, info) {
     if( err ) {
+      console.log('Error logging in:' + err + ' received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
       return rsp.render('signin.njk', {title: 'Sign In', errorMessage: err.message});
     }
 
     if( !user ) {
+      console.log('Invalid Username logging in. received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
       return rsp.render('signin.njk', {title: 'Sign In', errorMessage: info.message});
     }
       return req.logIn(user, function(err) {
       if( err ) {
+        console.log('Error logging in:' + err + ' received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
         return rsp.render('signin.njk', {title: 'Sign In', errorMessage: err.message});
       } else {
+        console.log('Succuessful login in (User:'+ user.username +'). received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
         return rsp.redirect('/');
       }
     });

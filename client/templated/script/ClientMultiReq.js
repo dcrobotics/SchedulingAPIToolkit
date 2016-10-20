@@ -61,4 +61,21 @@ cliMultiReq.prototype.addReq = function (rspFunc, label, url, params) {
   this.xmlHttpReq[myReq].open('GET',url);
   this.xmlHttpReq[myReq].send();
 };  
+
+cliMultiReq.prototype.addPost = function (rspFunc, label, url, params) {
+  var myReq = this.numReqs++;
+  this.rspFunc.push(rspFunc);
+  this.rdy.push(false);
+  this.data.push([]);
+  this.label.push(label);
+  this.passFunc.push(passFuncGenerator(myReq,this));
+  this.xmlHttpReq.push(new XMLHttpRequest);
   
+  this.xmlHttpReq[myReq].addEventListener('load',this.passFunc[myReq]);
+  this.xmlHttpReq[myReq].addEventListener('error',this.passFunc[myReq]);
+  this.xmlHttpReq[myReq].addEventListener('abort',this.passFunc[myReq]);
+  this.xmlHttpReq[myReq].open('POST',url, true);
+  this.xmlHttpReq[myReq].setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  this.xmlHttpReq[myReq].send(params);
+};  
+
