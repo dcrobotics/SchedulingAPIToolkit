@@ -14,7 +14,7 @@ var eeRoot = function eeRoot(req, passFunc){
   return;
 }
 
-var eeParse = function eeParse(req, splitPath, query, passFunc){
+var eeParse = function eeParse(req, splitPath, query, passFunc, rsp){
   var chainRet = '';
 
   // Make sure discovery of is complete for custom endpoints
@@ -53,9 +53,9 @@ var eeParse = function eeParse(req, splitPath, query, passFunc){
     }
 
     // Automatically send authentication of the user is authenticated
-    if ( req.isAuthenticated() ) {
+//    if ( req.isAuthenticated() ) {
       chainRet = chainRet.auth(auth.WP_JSON_USER,auth.WP_JSON_PASS)
-    }
+//    }
 
     // Handle query parameters
     if ( query != null ) {
@@ -69,6 +69,7 @@ var eeParse = function eeParse(req, splitPath, query, passFunc){
           chainRet = chainRet.param(args[0],args[1]);
         }
       }
+      //*/
     }
     // Pull the data
     chainRet.then(function (data){

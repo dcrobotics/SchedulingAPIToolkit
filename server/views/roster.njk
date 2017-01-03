@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <p>
+      <strong>{{ title }}</strong>
+      </br>
+      <table>
+        <tr>
+          <th>Students Name</th>
+          <th>Students Birthday</th>
+          <th>Students Age</th>
+          <th>Students Gender</th>
+          <th>Emergency Phone</th>
+          <th>Parents Name</th>
+          <th>Parents EMail</th>
+        </tr>
+        {% for student in studentData %}
+          <tr>
+            <td>{{ student.studentName }}</td>
+            <td>{{ student.studentDOB }}</td>
+            <td>{{ student.studentAge }}</td>
+            <td>{{ student.studentGender }}</td>
+            <td>{{ student.studentPhone }}</td>
+            <td>{{ student.ParentName }}</td>
+            <td>{{ student.ParentEMail }}</td>
+          </tr>
+        {% else %}
+        {% endfor %}
+      </table>
+      <a href="/signout" title="sign out">sign out</a>
+    </p>
+  </body>
+</html>
+

@@ -1,4 +1,3 @@
-//var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
@@ -21,13 +20,10 @@ var webServer = express();
 
 var whitelist = ['https://waybright.com', 'https://waybright.com/'];
 var corsOptions = {
- origin: function(origin, callback){
-   var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-   callback(null, originIsWhitelisted);
- }
+ origin: 'https://waybright.com',
+ methods: 'GET,PUT,POST',
+ credentials: true
 };
-
-
 
 // Setup Nunjucks
 nunjucks.configure('views', {

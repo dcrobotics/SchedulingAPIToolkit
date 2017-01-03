@@ -1,4 +1,3 @@
-var nunjucks = require('nunjucks');
 var WP = require('wpapi');
 var url  = require('url');
 
@@ -66,7 +65,7 @@ var apiRoute = function apiRoute(req, rsp, next) {
  //   notFound404(req, rsp, next);
  //   return;
  // }
-  parse(req, splitPath, query, respond);
+  parse(req, splitPath, query, respond, rsp);
 
 };
 

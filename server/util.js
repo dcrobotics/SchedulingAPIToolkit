@@ -1,3 +1,6 @@
+var http  = require('http');
+var https = require('https');
+
 var contType = {
   TEXT : 0,
   HTML : 1,
@@ -97,6 +100,57 @@ multiReq.prototype.addReqs = function addReqs(numAddReqs,rspFunc) {
     this.err.push('');
     this.label.push(ii.toString());
     this.passFunc.push(passFuncGenerator(ii,this));
+  }
+  return startReqs;
+};  
+
+multiReq.prototype.getReq = function getReq(Idx,URL) {
+  var reqRsp = function (myThis){
+    return function(rsp){
+      const statusCode = rsp.statusCode;
+      const contentType = rsp.headers['content-type'];
+
+      var reqErr;
+      if (statusCode !== 200) {
+        reqErr = new Error('Request Failed.\n' +
+                          'Status Code: ${statusCode}');
+      } else if (!/^application\/json/.test(contentType)) {
+        reqErr = new Error('Invalid content-type.\n' +
+                          'Expected application/json but received ${contentType}');
+      }
+      if (reqErr) {
+        console.log('getReq: Error (' + error.message + ') fetching data from ' + URL);
+        myThis.passFunc[Idx]('','getReq: Error (' + error.message + ') Getting Req from: ' + URL);
+        rsp.resume();
+        return;
+      }
+
+      rsp.setEncoding('utf8');
+      var rawData = '';
+        
+      rsp.on('data', function (chunk) { rawData += chunk; }); //Incrementrally add response data
+      rsp.on('end', function () {
+          var parsedData = JSON.parse(rawData);
+          myThis.passFunc[Idx](parsedData,'');
+//        try {
+//        } catch (err) {
+//          console.log('getReq: Error (' + err.Message + ') parsing data from ' + URL);
+//          myThis.passFunc[Idx]('','getReq: Error (' + err.Message + ') parsing data from: ' + URL);
+//        }
+      });
+    }
+  }
+/*  .on('error', (err) => {
+    console.log('getReq: Error (' + err.Message + ') parsing data from ' + URL);
+    this.passFunc[Idx]('','getReq: Error (' + err.Message + ') parsing data from: ' + URL);
+  });    
+*/  
+  if (URL.toLowerCase().startsWith('https')){
+    https.get(URL, reqRsp(this));
+  } else if (URL.toLowerCase().startsWith('http')) {
+    http.get(URL, reqRsp(this));
+  } else {
+    this.passFunc[Idx]('','Invalid URL in getReq:'+URL);
   }
 };  
 

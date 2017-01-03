@@ -14,7 +14,7 @@ var wpRoot = function wpRoot(req, passFunc){
   return;
 }
 
-var wpParse = function wpParse(req, splitPath, query, passFunc){
+var wpParse = function wpParse(req, splitPath, query, passFunc, rsp){
   var chainRet = '';
 
   // See if we are just displaying the root
