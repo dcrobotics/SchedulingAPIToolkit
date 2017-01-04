@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    {% for roster in rosters %}
+      <p>
+        <strong>{{ roster.title }}</strong>
+        </br>
+        <table border="1">
+          <tr>
+            <th>Students Name</th>
+            <th>Students Birthday</th>
+            <th>Students Age</th>
+            <th>Students Gender</th>
+            <th>Emergency Phone</th>
+            <th>Parents Name</th>
+            <th>Parents EMail</th>
+          </tr>
+          {% for student in roster.studentData %}
+            <tr>
+              <td>{{ student.studentName }}</td>
+              <td>{{ student.studentDOB }}</td>
+              <td>{{ student.studentAge }}</td>
+              <td>{{ student.studentGender }}</td>
+              <td>{{ student.studentPhone }}</td>
+              <td>{{ student.ParentName }}</td>
+              <td>{{ student.ParentEMail }}</td>
+            </tr>
+          {% else %}
+          {% endfor %}
+        </table>
+      </p>
+      </br>
+      </br>
+      </br>
+    {% else %}
+    {% endfor %}
+  </body>
+</html>
+

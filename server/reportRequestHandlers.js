@@ -2,37 +2,26 @@ var eeRequestHandlers     = require('./eeRequestHandlers.js');
 var util                  = require('./util.js');
 var eeutil                = require('./eeUtil.js');
 
-const EVT_LIST_LABEL = 'Event_List';
 
-
-  var renderRoster = function renderRoster(myRsp, myRoster){
+var renderRoster = function renderRoster(myRsp, myRoster){
   return function (dat, err){
     var studentData = [] // Create array to store data for event students
 //    if (data == []){
 //      rspFunc(data,err); // no data in the requested regLbl so just return
 //    } else {
 //      if (err) {
-//        console.log('gone');
-//        console.log(err);
-//        console.log(data);
 //        passFunc(data,err);
 //        util.sendResponse(myRsp, util.contType.TEXT, err );
 //      } else {
 //        myRsp.render('roster.njk', {title: title, studentData: studentData});
 //      }
-//    console.log(dat);
-//    console.log(JSON.stringify(myRoster.data));
-    var title = 'Roster for Event ' +  myRoster.eventID.toString() + ' (' + myRoster.data[this.evt_lbl]['EVT_name'] + ')';
-//    var title = 'Temp Title';
+    var title = 'Roster for Event ' +  myRoster.eventID.toString() + ' (' + myRoster.data[myRoster.evt_lbl]['EVT_name'] + ')';
     myRoster.reduceData (studentData);
-    myRoster.eventID.toString() + ' (' + 
     myRsp.render('roster.njk', {title: title, studentData: studentData});
   }
 }
 
-
 var getEventRoster = function getEventRoster(req, splitPath, query, passFunc, rsp) {
-
   // Make sure we got an event ID passed in
   if ( splitPath[3] != '' && splitPath[3] != undefined ) {
     if ( isNaN(splitPath[3]) ) {
@@ -45,100 +34,39 @@ var getEventRoster = function getEventRoster(req, splitPath, query, passFunc, rs
   }      
 
   var Event_ID = splitPath[3];
-  var reportMultiReq = new util.multiReq(0, passFunc);  //create the webpage data fetching object
 
-  var reportRoster = new eeutil.roster(req, reportMultiReq, query);
-
-
+  var reportRoster = new eeutil.roster(req, query);
   reportRoster.fetchData(Event_ID,renderRoster(rsp, reportRoster));
-  
 }
 
-var multiRenderRoster = function multiRenderRoster(evtID, evtTitle, data){
-  var studentData = [];
-//  console.log('Data for Event('+evtID+')');
-//  console.log(data);
-  //    if (data == []){
-  //      rspFunc(data,err); // no data in the requested regLbl so just return
-  //    } else {
-  //      if (err) {
-  //        console.log('gone');
-  //        console.log(err);
-  //        console.log(data);
-  //        passFunc(data,err);
-  //        util.sendResponse(rsp, util.contType.TEXT, err );
-  //      } else {
-  //        rsp.render('roster.njk', {title: title, studentData: studentData});
-  //      }
-  var title = 'Roster for Event ' +  evtID.toString() + ' (' + evtTitle + ')';
-  reduceRosterData (data, evtID, studentData);
-  console.log('Done with event('+ evtID.toString() +')');
-}
-
-var multiRosterFetch = function (req, mReq, query, curIdx, evtCnt, evtList, passFunc) {
-  return function (data,err) {
-
-    if ( evtCnt == 0 ) {
-      curIdx = 0;
-      console.log('Here');
-      data[EVT_LIST_LABEL].forEach(function(item, idx, array) {
-        evtCnt++;
-      });
-      console.log('There');
-      evtList = data;
-    }
-
-    console.log('Event Count: ' + evtCnt.toString());
-    console.log('Current Idx: ' + curIdx.toString());
-    var evtID;
-    var evtTitle;
-    evtList[EVT_LIST_LABEL].forEach(function(item, idx, array) {
-      if ( idx == curIdx ){
-        evtID    = parseInt(item['EVT_ID']);
-        evtTitle = item['EVT_name'];
-        console.log('Hit!');
+var renderRosters = function renderRoster(myRsp, myMRoster){
+  return function (dat, err){
+    var rosters = [] // Create array to store data for event students
+//    if (data == []){
+//      rspFunc(data,err); // no data in the requested regLbl so just return
+//    } else {
+//      if (err) {
+//        passFunc(data,err);
+//        util.sendResponse(myRsp, util.contType.TEXT, err );
+//      } else {
+//        myRsp.render('roster.njk', {title: title, studentData: studentData});
+//      }
+    var title = 'Overall Title';
+    for (ii = 0; ii < myMRoster.numRosters; ii++) {
+      rosters.push({title:'', studentData:[]});
+      if (myMRoster.rosters[ii].evt_lbl in myMRoster.rosters[ii].data){
+        rosters[ii].title = 'Roster for Event ' +  myMRoster.rosters[ii].eventID.toString() + ' (' + myMRoster.rosters[ii].data[myMRoster.rosters[ii].evt_lbl]['EVT_name'] + ')';
       }
-    });
-
-    console.log('Event Title: ' + evtTitle);
-    console.log('Event ID: ' + evtID.toString());
-    console.log('curIdx: ' + curIdx.toString());
-    if (curIdx > 0 ){
-      multiRenderRoster(evtID, evtTitle, data);
+      myMRoster.rosters[ii].reduceData(rosters[ii].studentData);
     }
-    if ( curIdx == evtCnt-2 ) {
-      passFunc(data,err);
-      return;
-    } else {
-      curIdx++;
-      getRosterData(req, mReq, evtID, query, multiRosterFetch(req, mReq, query, curIdx, evtCnt, evtList, passFunc));
-      return;
-    }
-  };
+    myRsp.render('rosters.njk', {title: title, rosters: rosters});
+  }
 }
 
 var getWeeklyRoster = function getWeeklyRoster(req, splitPath, query, passFunc, rsp) {
-  // correct query for a date range of events https://waybright.com/wp-json/ee/v4.8.36/events?where[Datetime.DTT_EVT_start][0]=BETWEEN&where[Datetime.DTT_EVT_start][1][]=2016-11-21T23:19:57&where[Datetime.DTT_EVT_start][1][]=2016-11-28T23:19:57
-  // Pull the data
-  
-  var rspFuncs = [];
-  
-  var getRosters = function(){
-    
-  }
-
-  var startIdx = 0;
-  var startEvtCnt = 0;
-  var startEvtList = [];
-
-  var reportMultiReq = new util.multiReq(0, passFunc);  //create the webpage data fetching object
-  console.log('Data it call1?');
-  var EVT_LIST_IDX = reportMultiReq.addReqs(1, multiRosterFetch(req, reportMultiReq, query, startIdx, startEvtCnt, startEvtList, passFunc));
-  console.log('Data it call2?');
-  reportMultiReq.label[EVT_LIST_IDX] = EVT_LIST_LABEL;
-
-  var requrl = 'https://waybright.com/wp-json/ee/v4.8.36/events?where[Datetime.DTT_EVT_start][0]=BETWEEN&where[Datetime.DTT_EVT_start][1][]=2016-11-21T23:19:57&where[Datetime.DTT_EVT_start][1][]=2016-11-28T23:19:57';
-  reportMultiReq.getReq(EVT_LIST_IDX,requrl);
+  var mRosters = new eeutil.multiRosters(req, query);
+  var timeDate = new Date();
+  mRosters.fetchRosters(timeDate,timeDate,renderRosters(rsp, mRosters));
 }
 
 var reportParse = function reportParse(req, splitPath, query, passFunc, rsp){
