@@ -4,39 +4,54 @@
     <title>{{ title }}</title>
   </head>
   <body>
-    {% for roster in rosters %}
-      <p>
-        <strong>{{ roster.title }}</strong>
-        </br>
-        <table border="1">
-          <tr>
-            <th>Students Name</th>
-            <th>Students Birthday</th>
-            <th>Students Age</th>
-            <th>Students Gender</th>
-            <th>Emergency Phone</th>
-            <th>Parents Name</th>
-            <th>Parents EMail</th>
-          </tr>
-          {% for student in roster.studentData %}
+    {% if numRosters > 0 %}
+      {% if numRosters > 1  or numEmptyCourses > 0 %}
+        <strong> Courses with Students: {{ numRosters }}</strong>
+      {% endif %}
+      {% for roster in rosters %}
+        <p>
+          <strong>{{ roster.title }}</strong>
+          <table border="1">
             <tr>
-              <td>{{ student.studentName }}</td>
-              <td>{{ student.studentDOB }}</td>
-              <td>{{ student.studentAge }}</td>
-              <td>{{ student.studentGender }}</td>
-              <td>{{ student.studentPhone }}</td>
-              <td>{{ student.ParentName }}</td>
-              <td>{{ student.ParentEMail }}</td>
+              <th>Students Name</th>
+              <th>Students Birthday</th>
+              <th>Students Age</th>
+              <th>Students Gender</th>
+              <th>Emergency Phone</th>
+              <th>Parents Name</th>
+              <th>Parents EMail</th>
             </tr>
-          {% else %}
-          {% endfor %}
-        </table>
+            {% for student in roster.studentData %}
+              <tr>
+                <td>{{ student.studentName }}</td>
+                <td>{{ student.studentDOB }}</td>
+                <td>{{ student.studentAge }}</td>
+                <td>{{ student.studentGender }}</td>
+                <td>{{ student.studentPhone }}</td>
+                <td>{{ student.ParentName }}</td>
+                <td>{{ student.ParentEMail }}</td>
+              </tr>
+            {% else %}
+            {% endfor %}
+          </table>
+        </p>
+      {% else %}
+      {% endfor %}
+    {% endif %}
+    </br>
+    </br>
+    {% if numEmptyCourses > 0 %}
+      {% if numEmptyCourses > 1  or numRosters > 0 %}
+        <strong> Empty Courses: {{ numEmptyCourses }}</strong>
+      {% endif %}
+      <p>
+      {% for course in emptyCourses %}
+        <strong>{{ course.title }}</strong>
+        </br>
+      {% else %}
+      {% endfor %}
       </p>
-      </br>
-      </br>
-      </br>
-    {% else %}
-    {% endfor %}
+    {% endif %}
   </body>
 </html>
 

@@ -2,22 +2,29 @@ var eeRequestHandlers     = require('./eeRequestHandlers.js');
 var util                  = require('./util.js');
 var eeutil                = require('./eeUtil.js');
 
-
 var renderRoster = function renderRoster(myRsp, myRoster){
   return function (dat, err){
-    var studentData = [] // Create array to store data for event students
-//    if (data == []){
-//      rspFunc(data,err); // no data in the requested regLbl so just return
-//    } else {
-//      if (err) {
-//        passFunc(data,err);
-//        util.sendResponse(myRsp, util.contType.TEXT, err );
-//      } else {
-//        myRsp.render('roster.njk', {title: title, studentData: studentData});
-//      }
-    var title = 'Roster for Event ' +  myRoster.eventID.toString() + ' (' + myRoster.data[myRoster.evt_lbl]['EVT_name'] + ')';
-    myRoster.reduceData (studentData);
-    myRsp.render('roster.njk', {title: title, studentData: studentData});
+    var rosters = []; // Create array to store data for event students
+    var curRoster = 0;
+    var emptyCourses = [];
+    var curEmptyCourse = 0;
+
+    var title = 'Event Roster';
+    if (myRoster.numRegs > 0 ){
+      rosters.push({title:'', studentData:[]});
+      if (myRoster.evt_lbl in myRoster.data){
+        rosters[curRoster].title = 'Roster for Event ' +  myRoster.eventID.toString() + ' (' + myRoster.data[myRoster.evt_lbl]['EVT_name'] + ')';
+      }
+      myRoster.reduceData(rosters[curRoster].studentData);
+      curRoster++;
+    } else {
+      emptyCourses.push({title:''});
+      if (myRoster.evt_lbl in myRoster.data){
+        emptyCourses[curEmptyCourse].title = 'Empty Event: ' +  myRoster.eventID.toString() + ' (' + myRoster.data[myRoster.evt_lbl]['EVT_name'] + ')';
+      }
+      curEmptyCourse++;
+    }
+    myRsp.render('rosters.njk', {title: title, numRosters: curRoster, rosters: rosters, numEmptyCourses: curEmptyCourse, emptyCourses: emptyCourses});
   }
 }
 
@@ -39,9 +46,13 @@ var getEventRoster = function getEventRoster(req, splitPath, query, passFunc, rs
   reportRoster.fetchData(Event_ID,renderRoster(rsp, reportRoster));
 }
 
-var renderRosters = function renderRoster(myRsp, myMRoster){
+var renderRosters = function renderRosters(myRsp, myMRoster){
   return function (dat, err){
-    var rosters = [] // Create array to store data for event students
+    var rosters = []; // Create array to store data for event students
+    var curRoster = 0;
+    var emptyCourses = [];
+    var curEmptyCourse = 0;
+    
 //    if (data == []){
 //      rspFunc(data,err); // no data in the requested regLbl so just return
 //    } else {
@@ -51,15 +62,24 @@ var renderRosters = function renderRoster(myRsp, myMRoster){
 //      } else {
 //        myRsp.render('roster.njk', {title: title, studentData: studentData});
 //      }
-    var title = 'Overall Title';
+    var title = 'Multiple Event Rosters';
     for (ii = 0; ii < myMRoster.numRosters; ii++) {
-      rosters.push({title:'', studentData:[]});
-      if (myMRoster.rosters[ii].evt_lbl in myMRoster.rosters[ii].data){
-        rosters[ii].title = 'Roster for Event ' +  myMRoster.rosters[ii].eventID.toString() + ' (' + myMRoster.rosters[ii].data[myMRoster.rosters[ii].evt_lbl]['EVT_name'] + ')';
+      if (myMRoster.rosters[ii].numRegs > 0 ){
+        rosters.push({title:'', studentData:[]});
+        if (myMRoster.rosters[ii].evt_lbl in myMRoster.rosters[ii].data){
+          rosters[curRoster].title = 'Roster for Event ' +  myMRoster.rosters[ii].eventID.toString() + ' (' + myMRoster.rosters[ii].data[myMRoster.rosters[ii].evt_lbl]['EVT_name'] + ')';
+        }
+        myMRoster.rosters[ii].reduceData(rosters[curRoster].studentData);
+        curRoster++;
+      } else {
+        emptyCourses.push({title:''});
+        if (myMRoster.rosters[ii].evt_lbl in myMRoster.rosters[ii].data){
+          emptyCourses[curEmptyCourse].title = 'Event: ' +  myMRoster.rosters[ii].eventID.toString() + ' (' + myMRoster.rosters[ii].data[myMRoster.rosters[ii].evt_lbl]['EVT_name'] + ')';
+        }
+        curEmptyCourse++;
       }
-      myMRoster.rosters[ii].reduceData(rosters[ii].studentData);
     }
-    myRsp.render('rosters.njk', {title: title, rosters: rosters});
+    myRsp.render('rosters.njk', {title: title, numRosters: curRoster, rosters: rosters, numEmptyCourses: curEmptyCourse, emptyCourses: emptyCourses});
   }
 }
 

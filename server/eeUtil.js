@@ -37,12 +37,17 @@ var getLinkedData = function getLinkedData(req, mReq, regLbl, linkName, query, r
 
 var rosterSaveRspFunc = function rosterSaveRspFunc(myThis){
   return function (dat, err){
-    myThis.data = dat;
-    myThis.err  = err;
+    myThis.data    = dat;
+    myThis.err     = err;
+    myThis.numRegs = 0;
+    if (myThis.evt_lbl + REG_POSTFIX in myThis.data){
+      myThis.data[myThis.evt_lbl + REG_POSTFIX].forEach(function(item, idx, array) {
+        myThis.numRegs++;
+      });
+    }
     myThis.passFunc(dat,err);
-    return;
   };
-};
+}
 
 var roster = function roster(req, query) {
   this.httpReq      = req;
@@ -53,6 +58,7 @@ var roster = function roster(req, query) {
   this.eventID      = 0;
   this.passFunc     = null;
   this.evt_lbl      = 'Unititialized';
+  this.numRegs      = 0;
 };
 
 roster.prototype.fetchData = function rosterFetchData(evtID, rspFunc){
@@ -70,7 +76,6 @@ roster.prototype.fetchData = function rosterFetchData(evtID, rspFunc){
   this.multiReq.label[regIdx+1] = this.evt_lbl+REG_POSTFIX;;
   eeRequestHandlers.eeParse(this.httpReq, ('/ee/events/'+this.eventID.toString()).split('/'), this.httpQuery, this.multiReq.passFunc[regIdx]);
   eeRequestHandlers.eeParse(this.httpReq, ('/ee/events/'+this.eventID.toString()+'/registrations').split('/'), null, this.multiReq.passFunc[regIdx+1]);
-  return;
 }
 
 roster.prototype.reduceData = function reduceData(studentData){
@@ -83,7 +88,7 @@ roster.prototype.reduceData = function reduceData(studentData){
   }
   var ii;
   var minAnsID;
-  for (ii = 0 ; ii < regNumbers.length ; ii++){
+  for (ii = 0 ; ii < this.numRegs ; ii++){
     studentData[ii] = {studentName:'', studentDOB:'', studentAge:'', studentGender:'', studentPhone:'', ParentName:'', ParentEMail:''};
 
     if (this.evt_lbl+REG_POSTFIX+'_registrations/'+regNumbers[ii]+'_answers' in this.data){
@@ -127,10 +132,8 @@ roster.prototype.reduceData = function reduceData(studentData){
 var chainFetchRoster = function chainFetchRoster(myThis,myIdx){
   return function(dat,err){
     if (myIdx < myThis.numRosters-1) {
-      console.log('Chainfetching Roster(' + myIdx.toString() + ')');
       myThis.rosters[myIdx].fetchData(myThis.eventIDs[myIdx],chainFetchRoster(myThis, myIdx+1));
     } else {
-      console.log('Done Chainfetching...  Calling rFunc');
       myThis.rFunc(dat,err);
     }
   }
@@ -138,7 +141,6 @@ var chainFetchRoster = function chainFetchRoster(myThis,myIdx){
 
 var parseRostersFunc = function parseRostersFunc(myThis){
   return function (dat,err) {
-    console.log('Parsing Rosters');
     myThis.data       = dat;
     myThis.err        = err;
     myThis.numRosters = 0;
@@ -148,12 +150,11 @@ var parseRostersFunc = function parseRostersFunc(myThis){
       myThis.eventIDs.push(parseInt(item['EVT_ID']));
       myThis.rosters.push(new roster(myThis.httpReq, null));
     });
-    console.log('Event Count: ' + myThis.numRosters.toString());
 
     if (myThis.numRosters > 0 ){
       myThis.rosters[0].fetchData(myThis.eventIDs[0],chainFetchRoster(myThis,0));
     } else {
-      // Error This
+      myThis.rFunc([],'MultiRoster parse error.  No rosters found from: ' + myThis.httpReq.url);
     }
   }
 }
@@ -182,11 +183,10 @@ multiRosters.prototype.fetchRosters = function multiRosterFetchData(startDate, e
   var startEvtCnt = 0;
   var startEvtList = [];
 
-  console.log('Fetching Roster List');
   var EVT_LIST_IDX = this.mReq.addReqs(1, parseRostersFunc(this));
   this.mReq.label[EVT_LIST_IDX] = EVT_LIST_LABEL;
 
-  var requrl = 'https://waybright.com/wp-json/ee/v4.8.36/events?where[Datetime.DTT_EVT_start][0]=BETWEEN&where[Datetime.DTT_EVT_start][1][]=2017-01-08T23:59:59&where[Datetime.DTT_EVT_start][1][]=2017-01-15T23:59:59';
+  var requrl = 'https://waybright.com/wp-json/ee/v4.8.36/events?where[Datetime.DTT_EVT_start][0]=BETWEEN&where[Datetime.DTT_EVT_start][1][]=2017-01-08T23:59:59&where[Datetime.DTT_EVT_start][1][]=2017-01-15T23:59:59&li‌​mit=2000';
   this.mReq.getReq(EVT_LIST_IDX,requrl);
 }
 
