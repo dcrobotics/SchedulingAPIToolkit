@@ -82,6 +82,8 @@ webServer.get('^\/signout\/?$', authRoute.signOut);
 /********************************/
 // API Routes
 webServer.get('^\/wp|^\/ee|^\/report|^\/refresh\/?$', route.apiRoute );
+webServer.post('^\/wp|^\/ee|^\/report|^\/refresh\/?$', route.apiRoutePost );
+
 /********************************/
 
 // 404 not found

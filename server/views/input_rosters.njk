@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    {% if numRosters > 0 %}
+      {% if numRosters == 1 %}
+        <form method="post" action="/report/test_roster">
+          <p>
+            <label for="Event ID">eventID</label>
+            <input type="text" name="eventID" id="EventID"
+                   placeholder="" required="true"/>
+          </p>
+          <p>
+            <input type="submit" name="getEvent" id="getEvent" value="Get Event"/> 
+              <a href="/signup" title="register">register</a>
+          </p>
+        </form>
+      {% endif %}
+      {% if numRosters > 1  or numEmptyCourses > 0 %}
+        <strong> Courses with Students: {{ numRosters }}</strong>
+      {% endif %}
+      {% for roster in rosters %}
+        <p>
+          <strong> {{ roster.evtName }} &nbsp &nbsp {{ roster.evtID }}</strong>
+          <table border="1">
+            <tr>
+              <th>Students Full Name</th>
+              <th>Students Birthday</th>
+              <th>&nbsp Age &nbsp</th>
+              <th>Gend</th>
+              <th>Emergency Phone</th>
+              <th>Parents Full Name</th>
+              <th>Ticket Start Date</th>
+              <th>Ticket End Date</th>
+              <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
+              <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
+              <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
+              <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
+              <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
+              <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
+              <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
+
+            </tr>
+            {% for student in roster.studentData %}
+              <tr>
+                <td>{{ student.studentName }}</td>
+                <td>{{ student.studentDOB }}</td>
+                <td>{{ student.studentAge }}</td>
+                <td>{{ student.studentGender }}</td>
+                <td>{{ student.studentPhone }}</td>
+                <td>{{ student.ParentName }}</td>
+                <td>{{ student.TicketStartTxt }}</td>
+                <td>{{ student.TicketEndTxt }}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            {% else %}
+            {% endfor %}
+          </table>
+        </p>
+      {% else %}
+      {% endfor %}
+    {% endif %}
+    </br>
+    </br>
+    {% if numEmptyCourses > 0 %}
+      {% if numEmptyCourses > 1  or numRosters > 0 %}
+        <strong> Empty Courses: {{ numEmptyCourses }}</strong>
+      {% endif %}
+      <p>
+      {% for course in emptyCourses %}
+          <strong> Empty Event: {{ course.evtID }} &nbsp &nbsp ({{ course.evtName }})</strong>
+        </br>
+      {% else %}
+      {% endfor %}
+      </p>
+    {% endif %}
+  </body>
+</html>
+

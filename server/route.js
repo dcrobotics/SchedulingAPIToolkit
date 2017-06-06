@@ -69,9 +69,29 @@ var apiRoute = function apiRoute(req, rsp, next) {
 
 };
 
+var apiRoutePost = function apiRoutePost(req, rsp, next) {
+  var timeDate = new Date();
+  var path = url.parse(req.url).pathname;
+  var splitPath = path.split('/')
+  var query = url.parse(req.url).query;
+  console.log('Post for ' + req.url + ' received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
+
+  var respond = function respond(data,err){
+    if (err) {
+      util.sendResponse(rsp, util.contType.TEXT, err );
+    } else {
+      util.sendResponse(rsp, util.contType.JSON, JSON.stringify(data));
+    }
+  };
+
+  reportRequestHandlers.reportParsePost(req, splitPath, query, respond, rsp);
+
+};
+
 // Route exports
-exports.notFound404 = notFound404;
-exports.apiRoute    = apiRoute;
+exports.notFound404  = notFound404;
+exports.apiRoute     = apiRoute;
+exports.apiRoutePost = apiRoutePost;
 
 // WPAPI JSON REST API exports
 exports.DATA_SITE     = DATA_SITE;
