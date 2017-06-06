@@ -2,6 +2,9 @@ var eeRequestHandlers = require('./eeRequestHandlers.js');
 var util              = require('./util.js');
 
 const REG_POSTFIX    = '_Regs';
+const DTT_POSTFIX    = '_DTTs';
+const TIK_POSTFIX    = '_Tiks';
+const QUES_POSTFIX   = '_Qs';
 const EVT_LIST_LABEL = 'Event_List';
 
 // Pulls "linked" data from an Event Espresso Item
@@ -26,7 +29,7 @@ var getLinkedData = function getLinkedData(req, mReq, regLbl, linkName, query, r
           dataLink = dataLink.slice(dataLink.indexOf('/ee/')+4)
           dataLink = dataLink.slice(dataLink.indexOf('/')+1)
           
-          mReq.label[startIdx+idx] = regLbl+'_'+selfLink+'_'+linkName;
+          mReq.label[startIdx+idx] = regLbl+'_'+selfLink.replace('/', '_')+'_'+linkName;
           eeRequestHandlers.eeParse(req, ('/ee/' + dataLink).split('/'), query, mReq.passFunc[startIdx+idx]);
         });
       }      
@@ -35,19 +38,46 @@ var getLinkedData = function getLinkedData(req, mReq, regLbl, linkName, query, r
   };
 }
 
-var rosterSaveRspFunc = function rosterSaveRspFunc(myThis){
+var rosterSaveDataFunc = function rosterSaveDataFunc(myThis, passFunc){
+  return function (dat, err){
+    myThis.data    = dat;
+    myThis.err     = err;
+    passFunc(dat, err);
+  };
+}
+
+var rosterProcRegDataFunc = function rosterProcRegDataFunc(myThis, passFunc){
   return function (dat, err){
     myThis.data    = dat;
     myThis.err     = err;
     myThis.numRegs = 0;
+
     if (myThis.evt_lbl + REG_POSTFIX in myThis.data){
       myThis.data[myThis.evt_lbl + REG_POSTFIX].forEach(function(item, idx, array) {
-        myThis.numRegs++;
+        if (item['REG_deleted'] == false){
+          myThis.numRegs++;
+          myThis.regNumbers.push(item['REG_ID']);
+        }
       });
-    }
-    myThis.passFunc(dat,err);
+
+      var tiksStartIdx = myThis.multiReq.addReqs(myThis.numRegs, rosterSaveDataFunc(myThis,passFunc));
+
+      for (ii = 0; ii < myThis.numRegs; ii++){
+		var dateTimesURL = '/ee/tickets/' + myThis.data[myThis.evt_lbl + REG_POSTFIX + '_registrations_' + myThis.regNumbers[ii].toString() + '_ticket']['TKT_ID'] + '/datetimes'
+        myThis.multiReq.label[tiksStartIdx + ii] = myThis.evt_lbl + TIK_POSTFIX + '_Reg_' + myThis.regNumbers[ii] + '_DateTimes';
+        eeRequestHandlers.eeParse(myThis.httpReq, dateTimesURL.split('/'), null, myThis.multiReq.passFunc[tiksStartIdx + ii]);
+      }
+	  if (myThis.numRegs == 0){
+        passFunc(dat, err);
+	  }
+    } else {
+      passFunc(dat, err);
+	}
+    
   };
 }
+
+
 
 var roster = function roster(req, query) {
   this.httpReq      = req;
@@ -59,6 +89,7 @@ var roster = function roster(req, query) {
   this.passFunc     = null;
   this.evt_lbl      = 'Unititialized';
   this.numRegs      = 0;
+  this.regNumbers   = [];
 };
 
 roster.prototype.fetchData = function rosterFetchData(evtID, rspFunc){
@@ -67,65 +98,109 @@ roster.prototype.fetchData = function rosterFetchData(evtID, rspFunc){
   this.multiReq     = new util.multiReq(0, this.passFunc)
   this.evt_lbl      = 'Event_'+this.eventID.toString();
 
-  // Get answers first then Attendees
-  var attPassFunc = getLinkedData(this.httpReq, this.multiReq,this.evt_lbl+REG_POSTFIX,'attendee',null,rosterSaveRspFunc(this));
-  var ansPassFunc = getLinkedData(this.httpReq, this.multiReq,this.evt_lbl+REG_POSTFIX,'answers',null,attPassFunc);
+  var rosterProcPassFunc = rosterProcRegDataFunc(this, rspFunc)
+  var tikPassFunc  = getLinkedData(this.httpReq, this.multiReq,this.evt_lbl+REG_POSTFIX,'ticket',null,rosterProcPassFunc);
+  var statPassFunc = getLinkedData(this.httpReq, this.multiReq,this.evt_lbl+REG_POSTFIX,'status',null,tikPassFunc);
+  var attPassFunc  = getLinkedData(this.httpReq, this.multiReq,this.evt_lbl+REG_POSTFIX,'attendee',null,statPassFunc);
+  var ansPassFunc  = getLinkedData(this.httpReq, this.multiReq,this.evt_lbl+REG_POSTFIX,'answers',null,attPassFunc);
 
-  var regIdx = this.multiReq.addReqs(2, ansPassFunc);
+  var regIdx = this.multiReq.addReqs(3, ansPassFunc);
   this.multiReq.label[regIdx]   = this.evt_lbl;
-  this.multiReq.label[regIdx+1] = this.evt_lbl+REG_POSTFIX;;
-  eeRequestHandlers.eeParse(this.httpReq, ('/ee/events/'+this.eventID.toString()).split('/'), this.httpQuery, this.multiReq.passFunc[regIdx]);
-  eeRequestHandlers.eeParse(this.httpReq, ('/ee/events/'+this.eventID.toString()+'/registrations').split('/'), null, this.multiReq.passFunc[regIdx+1]);
+  this.multiReq.label[regIdx+1] = this.evt_lbl+DTT_POSTFIX;;
+  this.multiReq.label[regIdx+2] = this.evt_lbl+REG_POSTFIX;;
+  eeRequestHandlers.eeParse(this.httpReq, ('/ee/events/'+this.eventID.toString()).split('/'), 'limit=70', this.multiReq.passFunc[regIdx]);
+  eeRequestHandlers.eeParse(this.httpReq, ('/ee/events/'+this.eventID.toString()+'/datetimes').split('/'), 'limit=70', this.multiReq.passFunc[regIdx+1]);
+  eeRequestHandlers.eeParse(this.httpReq, ('/ee/events/'+this.eventID.toString()+'/registrations').split('/'), 'limit=96', this.multiReq.passFunc[regIdx+2]);
 }
 
 roster.prototype.reduceData = function reduceData(studentData){
-  var regNumbers = [];
-  // pull the requested linked data for each item in regLbl
-  if (this.evt_lbl + REG_POSTFIX in this.data){
-    this.data[this.evt_lbl + REG_POSTFIX].forEach(function(item, idx, array) {
-      regNumbers.push(item['REG_ID']);
-    });
-  }
-  var ii;
+  var ii = -1;
+  var jj = -1;
   var minAnsID;
-  for (ii = 0 ; ii < this.numRegs ; ii++){
-    studentData[ii] = {studentName:'', studentDOB:'', studentAge:'', studentGender:'', studentPhone:'', ParentName:'', ParentEMail:''};
-
-    if (this.evt_lbl+REG_POSTFIX+'_registrations/'+regNumbers[ii]+'_answers' in this.data){
-      minAnsID = 999999999999999;
-      this.data[this.evt_lbl+REG_POSTFIX+'_registrations/'+regNumbers[ii]+'_answers'].forEach(function(item, idx, array) {
-        if ( item['ANS_ID'] < minAnsID ) { minAnsID = item['ANS_ID']; }
-      });
-      this.data[this.evt_lbl+REG_POSTFIX+'_registrations/'+regNumbers[ii]+'_answers'].forEach(function(item, idx, array) {
-        switch (item['ANS_ID']) {
-          case minAnsID:
-            studentData[ii]['studentName'] = item['ANS_value'].slice();
-            break;
-          case minAnsID+1:
-            studentData[ii]['studentDOB'] = item['ANS_value'].slice();
-            break;
-          case minAnsID+2:
-            studentData[ii]['studentAge'] = item['ANS_value'].slice();
-            break;
-          case minAnsID+3:
-            studentData[ii]['studentGender'] = item['ANS_value'].slice();
-            break;
-          case minAnsID+4:
-            studentData[ii]['studentPhone'] = item['ANS_value'].slice();
-            break;
-          default:
+  var myThis = this;
+  this.data[this.evt_lbl + REG_POSTFIX].forEach(function(item, idx, array) {
+    if (item['REG_deleted'] == false){
+      ii++;
+      if (myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_status' in myThis.data){
+        if ('STS_code' in myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_status']){
+          var statusCode = myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_status']['STS_code'];
         }
-      });
-    }
-    if (this.evt_lbl+REG_POSTFIX+'_registrations/'+regNumbers[ii]+'_attendee' in this.data){
-      if ('ATT_full_name' in this.data[this.evt_lbl+REG_POSTFIX+'_registrations/'+regNumbers[ii]+'_attendee']){
-        studentData[ii]['ParentName']  = this.data[this.evt_lbl+REG_POSTFIX+'_registrations/'+regNumbers[ii]+'_attendee']['ATT_full_name'];
       }
-      if ('ATT_email' in this.data[this.evt_lbl+REG_POSTFIX+'_registrations/'+regNumbers[ii]+'_attendee']){
-        studentData[ii]['ParentEMail'] = this.data[this.evt_lbl+REG_POSTFIX+'_registrations/'+regNumbers[ii]+'_attendee']['ATT_email'];
+      if ((statusCode === 'APPROVED') || (statusCode === 'PENDING_PAYMENT')){
+        jj++;
+        studentData.push({regStatus:'', studentName:'', studentDOB:'', studentAge:'', studentGender:'', studentPhone:'', ParentName:'', ParentEMail:'', TicketName:'', TicketPrice:-1, TicketStart:[], TicketEnd:[], TicketStartTxt:'', TicketEndTxt:''});
+        studentData[jj]['regStatus']  = statusCode;
+
+        if (myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_answers' in myThis.data){
+          minAnsID = 999999999999999;
+          myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_answers'].forEach(function(item, idx, array) {
+            if ( item['ANS_ID'] < minAnsID ) { minAnsID = item['ANS_ID']; }
+          });
+          myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_answers'].forEach(function(item, idx, array) {
+            switch (item['ANS_ID']) {
+            case minAnsID:
+              studentData[jj]['studentName'] = item['ANS_value'].slice();
+              break;
+            case minAnsID+1:
+              studentData[jj]['studentDOB'] = item['ANS_value'].slice();
+              break;
+            case minAnsID+2:
+              studentData[jj]['studentAge'] = item['ANS_value'].slice();
+              break;
+            case minAnsID+3:
+              studentData[jj]['studentGender'] = item['ANS_value'].slice();
+              break;
+            case minAnsID+4:
+              studentData[jj]['studentPhone'] = item['ANS_value'].slice();
+              break;
+            default:
+            }
+          });
+        }
+
+		if (myThis.evt_lbl+ TIK_POSTFIX + '_Reg_' + myThis.regNumbers[ii] + '_DateTimes' in myThis.data){
+          myThis.data[myThis.evt_lbl+TIK_POSTFIX+ '_Reg_' + myThis.regNumbers[ii] + '_DateTimes'].forEach(function(item, idx, array) {
+			var splitData = item['DTT_EVT_start'].split('T');
+			var splitDate = splitData[0].split('-');
+			var splitTime = splitData[1].split(':');
+			ticketDate = new Date(splitDate[0], splitDate[1]-1, splitDate[2], splitTime[0], splitTime[1], 0, 0);
+			
+			if (idx == 0) {
+              studentData[jj]['TicketStart'] = new Date(ticketDate.getTime());
+              studentData[jj]['TicketEnd']   = new Date(ticketDate.getTime());
+			} else {
+			  if (studentData[jj]['TicketStart'] > ticketDate){studentData[jj]['TicketStart'] = new Date(ticketDate.getTime());}
+			  if (studentData[jj]['TicketEnd']   < ticketDate){studentData[jj]['TicketEnd']   = new Date(ticketDate.getTime());}
+			}
+		  });
+		  studentData[jj]['TicketStartTxt'] = util.getDateTimeString(studentData[jj]['TicketStart']);
+		  studentData[jj]['TicketEndTxt']   = util.getDateTimeString(studentData[jj]['TicketEnd']);
+        }
+		
+        if (myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_ticket' in myThis.data){
+          if ('TKT_name' in myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_ticket']){
+            studentData[jj]['TicketName']  = myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_ticket']['TKT_name'];
+          }
+        }
+        if (myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_ticket' in myThis.data){
+          if ('TKT_price' in myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_ticket']){
+            if ('pretty' in myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_ticket']['TKT_price']){
+              studentData[jj]['TicketPrice']  = myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_ticket']['TKT_price']['pretty'];
+              studentData[jj]['TicketPrice'] = studentData[jj]['TicketPrice'].slice(0,studentData[jj]['TicketPrice'].indexOf('.')+3)
+            }
+          }
+        }
+        if (myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_attendee' in myThis.data){
+          if ('ATT_full_name' in myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_attendee']){
+            studentData[jj]['ParentName']  = myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_attendee']['ATT_full_name'];
+          }
+          if ('ATT_email' in myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_attendee']){
+            studentData[jj]['ParentEMail'] = myThis.data[myThis.evt_lbl+REG_POSTFIX+'_registrations_'+myThis.regNumbers[ii]+'_attendee']['ATT_email'];
+          }
+        }
       }
-    }
-  }
+	  }
+  });
 }
 
 // Generate the passFunc callback functions with their index pre inserted
@@ -186,7 +261,7 @@ multiRosters.prototype.fetchRosters = function multiRosterFetchData(startDate, e
   var EVT_LIST_IDX = this.mReq.addReqs(1, parseRostersFunc(this));
   this.mReq.label[EVT_LIST_IDX] = EVT_LIST_LABEL;
 
-  var requrl = 'https://waybright.com/wp-json/ee/v4.8.36/events?where[Datetime.DTT_EVT_start][0]=BETWEEN&where[Datetime.DTT_EVT_start][1][]=2017-01-08T23:59:59&where[Datetime.DTT_EVT_start][1][]=2017-01-15T23:59:59&li‌​mit=2000';
+  var requrl = 'https://waybright.com/wp-json/ee/v4.8.36/events?where[Datetime.DTT_EVT_start][0]=BETWEEN&where[Datetime.DTT_EVT_start][1][]=2017-01-22T00:00:00&where[Datetime.DTT_EVT_start][1][]=2017-01-29T00:00:00&li‌​mit=2000';
   this.mReq.getReq(EVT_LIST_IDX,requrl);
 }
 

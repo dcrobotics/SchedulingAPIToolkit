@@ -19,16 +19,12 @@
               <th>Gender</th>
               <th>Emergency Phone</th>
               <th>Parents Full Name</th>
+              <th>Parents EMail</th>
+              <th>Ticket Name</th>
+              <th>Ticket<br>Price</th>
               <th>Ticket Start Date</th>
               <th>Ticket End Date</th>
-              <th>&nbsp Mo &nbsp</th>
-              <th>&nbsp Tu &nbsp</th>
-              <th>&nbsp We &nbsp</th>
-              <th>&nbsp Th &nbsp</th>
-              <th>&nbsp Fr &nbsp</th>
-              <th>&nbsp Sa &nbsp</th>
-              <th>&nbsp Su &nbsp</th>
-			  
+              <th>Registration Status</th>
             </tr>
             {% for student in roster.studentData %}
               <tr>
@@ -38,19 +34,19 @@
                 <td>{{ student.studentGender }}</td>
                 <td>{{ student.studentPhone }}</td>
                 <td>{{ student.ParentName }}</td>
+                <td>{{ student.ParentEMail }}</td>
+                <td>{{ student.TicketName }}</td>
+                <td>{{ student.TicketPrice }}</td>
                 <td>{{ student.TicketStartTxt }}</td>
                 <td>{{ student.TicketEndTxt }}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{{ student.regStatus }}</td>
               </tr>
             {% else %}
             {% endfor %}
+            
           </table>
+          </br>
+          {{roster.emailList}}
         </p>
       {% else %}
       {% endfor %}
@@ -63,7 +59,7 @@
       {% endif %}
       <p>
       {% for course in emptyCourses %}
-          <strong> Empty Event: {{ course.evtID }} &nbsp &nbsp ({{ course.evtName }})</strong>
+          <strong> Empty Event {{ course.evtID }} &nbsp &nbsp ({{ course.evtName }})</strong>
         </br>
       {% else %}
       {% endfor %}

@@ -7,6 +7,23 @@ var contType = {
   JSON : 2
 }
 
+var DAYS     = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+var MONTHS   = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+var DATENUMS = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59'];
+
+var getDateTimeString = function(evtDateTime){
+  var evtHour = evtDateTime.getHours();
+  var evtDateTimeString = '';
+  if (evtHour == 12 || evtHour == 0){ evtHour += 12; }
+  if ( evtHour > 12 ){
+    evtDateTimeString = (evtHour - 12).toString() + ':' + DATENUMS[evtDateTime.getMinutes()] + ' PM';
+  } else {
+    evtDateTimeString = evtHour.toString()        + ':' + DATENUMS[evtDateTime.getMinutes()] + ' AM';
+  }
+  evtDateTimeString = DAYS[evtDateTime.getDay()] + ', ' + DATENUMS[evtDateTime.getMonth()+1] + '/' + DATENUMS[evtDateTime.getDate()] + '/' + evtDateTime.getFullYear() + ' ' + evtDateTimeString;
+  return evtDateTimeString;
+}
+
 var setHeader = function setHeader(response, type){
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -154,7 +171,8 @@ multiReq.prototype.getReq = function getReq(Idx,URL) {
   }
 };  
 
-exports.contType     = contType;
-exports.setHeader    = setHeader;
-exports.sendResponse = sendResponse;
-exports.multiReq     = multiReq;
+exports.contType          = contType;
+exports.setHeader         = setHeader;
+exports.sendResponse      = sendResponse;
+exports.multiReq          = multiReq;
+exports.getDateTimeString = getDateTimeString;
