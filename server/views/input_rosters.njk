@@ -8,13 +8,12 @@
       {% if numRosters == 1 %}
         <form method="post" action="/report/test_roster">
           <p>
-            <label for="Event ID">eventID</label>
+            <label for="Event ID">Event ID</label>
             <input type="text" name="eventID" id="EventID"
-                   placeholder="" required="true"/>
+                   placeholder="" required="true" value={{ rosters[0].evtID }} />
           </p>
           <p>
             <input type="submit" name="getEvent" id="getEvent" value="Get Event"/> 
-              <a href="/signup" title="register">register</a>
           </p>
         </form>
       {% endif %}
@@ -39,8 +38,6 @@
               <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
               <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
               <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
-              <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
-              <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
 
             </tr>
             {% for student in roster.studentData %}
@@ -53,8 +50,6 @@
                 <td>{{ student.ParentName }}</td>
                 <td>{{ student.TicketStartTxt }}</td>
                 <td>{{ student.TicketEndTxt }}</td>
-                <td></td>
-                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>

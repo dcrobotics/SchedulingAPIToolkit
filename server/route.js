@@ -84,6 +84,7 @@ var apiRoutePost = function apiRoutePost(req, rsp, next) {
     }
   };
 
+  // For now we are only accepting posts reports
   reportRequestHandlers.reportParsePost(req, splitPath, query, respond, rsp);
 
 };

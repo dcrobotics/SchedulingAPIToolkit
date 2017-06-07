@@ -55,7 +55,7 @@ var signInPost = function(req, rsp, next) {
         return rsp.render('signin.njk', {title: 'Sign In', errorMessage: err.message});
       } else {
         console.log('Succuessful login in (User:'+ user.username +'). received from ' + req.headers['x-forwarded-for'] + ' on ' + timeDate.toString());
-        return rsp.redirect('/');
+        return rsp.redirect('/report/roster/8040');
       }
     });
   })(req, rsp, next);

@@ -169,7 +169,7 @@ var reportParse = function reportParse(req, splitPath, query, passFunc, rsp){
       getEventRoster(req, splitPath, query, passFunc, rsp, 'admin_rosters.njk');
       break;
     case 'roster':
-      getEventRoster(req, splitPath, query, passFunc, rsp, 'rosters.njk');
+      getEventRoster(req, splitPath, query, passFunc, rsp, 'input_rosters.njk');
       break;
     case 'test_roster':
       getEventRoster(req, splitPath, query, passFunc, rsp, 'input_rosters.njk');
@@ -193,7 +193,7 @@ var reportParse = function reportParse(req, splitPath, query, passFunc, rsp){
 // POST
 var reportParsePost = function(req, splitPath, query, passFunc, rsp) {
   console.log(req.body.eventID)
-  return rsp.redirect('/report/test_roster/'+req.body.eventID);
+  return rsp.redirect('/report/roster/'+req.body.eventID);
 };
 
 var reportCheckAuth = function reportCheckAuth(splitPath){
