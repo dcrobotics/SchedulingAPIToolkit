@@ -11,8 +11,6 @@
             <label for="Event ID">Event ID</label>
             <input type="text" name="eventID" id="EventID"
                    placeholder="" required="true" value={{ rosters[0].evtID }} />
-          </p>
-          <p>
             <input type="submit" name="getEvent" id="getEvent" value="Get Event"/> 
           </p>
         </form>
@@ -29,8 +27,6 @@
               <th>Students Birthday</th>
               <th>&nbsp Age &nbsp</th>
               <th>Gend</th>
-              <th>Emergency Phone</th>
-              <th>Parents Full Name</th>
               <th>Ticket Start Date</th>
               <th>Ticket End Date</th>
               <th>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</th>
@@ -46,8 +42,6 @@
                 <td>{{ student.studentDOB }}</td>
                 <td>{{ student.studentAge }}</td>
                 <td>{{ student.studentGender }}</td>
-                <td>{{ student.studentPhone }}</td>
-                <td>{{ student.ParentName }}</td>
                 <td>{{ student.TicketStartTxt }}</td>
                 <td>{{ student.TicketEndTxt }}</td>
                 <td></td>

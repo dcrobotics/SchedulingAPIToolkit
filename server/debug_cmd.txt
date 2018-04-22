@@ -1,0 +1,1 @@
+sudo node --inspect=172.31.28.195:52200 server.js

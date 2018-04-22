@@ -14,6 +14,7 @@ var wpEpDiscovery = WP.discover( DATA_SITE );
 var wpRequestHandlers     = require('./wpRequestHandlers.js');
 var eeRequestHandlers     = require('./eeRequestHandlers.js');
 var reportRequestHandlers = require('./reportRequestHandlers.js');
+var gsRequestHandlers     = require('./gsRequestHandlers.js');
 
 // 404 not found
 var notFound404 = function notFound404(req, rsp, next) {
@@ -52,6 +53,14 @@ var apiRoute = function apiRoute(req, rsp, next) {
       checkAuth = reportRequestHandlers.reportCheckAuth;
       parse     = reportRequestHandlers.reportParse;
       break;
+    case 'gs':
+      checkAuth = gsRequestHandlers.gsCheckAuth;
+      parse     = gsRequestHandlers.gsParse;
+      if (!req.isAuthenticated()){
+        notFound404(req, rsp, next);
+        return;
+      }
+      break;
     case 'refresh':
       wpEpDiscovery = WP.discover( DATA_SITE );
       util.sendResponse(rsp, util.contType.TEXT, 'Discovery data has been refreshed.' );
@@ -85,7 +94,26 @@ var apiRoutePost = function apiRoutePost(req, rsp, next) {
   };
 
   // For now we are only accepting posts reports
-  reportRequestHandlers.reportParsePost(req, splitPath, query, respond, rsp);
+  switch (splitPath[1]) {
+    case 'report':
+      reportRequestHandlers.reportParsePost(req, splitPath, query, respond, rsp);
+      break;
+    case 'gs':
+      if (!req.isAuthenticated()){
+        notFound404(req, rsp, next);
+        return;
+      }
+      gsRequestHandlers.gsParsePost(req, splitPath, query, respond, rsp);
+      break;
+    case 'refresh':
+      wpEpDiscovery = WP.discover( DATA_SITE );
+      util.sendResponse(rsp, util.contType.TEXT, 'Discovery data has been refreshed.' );
+      return;
+      break;
+    default:
+      notFound404(req, rsp, next);
+      return;
+  }
 
 };
 

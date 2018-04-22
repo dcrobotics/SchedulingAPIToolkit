@@ -18,16 +18,19 @@
   },
   "homepage": "https://github.com/dcrobotics/SchedulingAPIToolkit#readme",
   "dependencies": {
-    "express": "^4.14.0",
-    "mysql": "^2.11.1",
-    "wpapi": "^0.8.0",
-    "body-parser": "*",
-    "cookie-parser": "*",
-    "express-session": "*",
     "bcrypt-nodejs": "*",
-    "ejs": "*",
+    "body-parser": "*",
+    "bookshelf": "^0.12.1",
+    "cookie-parser": "*",
+    "cors": "^2.8.4",
+    "express": "^4.14.0",
+    "express-session": "*",
+    "googleapis": "^29.0.0",
+    "knex": "^0.14.2",
+    "mysql": "^2.11.1",
+    "nunjucks": "^3.0.1",
     "passport": "*",
     "passport-local": "*",
-    "bookshelf": "^0.5"
+    "wpapi": "^1.1.2"
   }
 }

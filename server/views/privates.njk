@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <form method="post" action="/gs/privates">
+      <p>
+        <select name="studentName">
+          {% for name in studentNames %}
+            <option value="{{ name }}">{{ name }}</option>
+          {% endfor %}
+        </select>
+        <br><br>
+
+        <input type="submit" name="getPrivateNotes" id="getPrivateNotes" value="Get Private Notes"/> 
+      </p>
+    </form>
+    <h2>{{title}}</h2>
+    <strong> Private Course Subtotals</strong>
+    <p>
+      <table border="1">
+        <tr>
+          <th>Course</th>
+          <th>Hours</th>
+          <th>Course<br>Area</th>
+          <th>Hours</th>
+        </tr>
+        {% for subtotalRow in subtotalData %}
+          <tr>
+          {% for subtotalCol in subtotalRow %}
+            {% if not loop.first %}
+              <td>{{ subtotalCol }}</td>
+            {% endif %}
+          {% endfor %}
+          </tr>
+        {% endfor %}
+      </table>
+    </p>
+    <strong> Private Course Sessions</strong>
+    <p>
+      <table border="1">
+        <tr>
+          <th>Course<br>Area</th>
+          <th>Course</th>
+          <th>Lesson<br>Date</th>
+          <th>Duration<br>(Hrs)</th>
+          <th>&nbsp &nbsp &nbsp &nbsp Instructor &nbsp &nbsp &nbsp &nbsp</th>
+          <th>Notes</th>
+        </tr>
+        {% for studentDataRow in studentData %}
+          <tr>
+          {% for studentDataCol in studentDataRow %}
+            <td>{{ studentDataCol }}</td>
+          {% endfor %}
+          </tr>
+        {% endfor %}
+      </table>
+    </p>
+  </body>
+</html>
+

@@ -54,7 +54,7 @@ var eeParse = function eeParse(req, splitPath, query, passFunc, rsp){
 
     // Automatically send authentication of the user is authenticated
     if ( req.isAuthenticated() ) {
-      chainRet = chainRet.auth(auth.WP_JSON_USER,auth.WP_JSON_PASS)
+      chainRet = chainRet.auth(auth.WP_JSON_CREDS)
     }
 
     // Handle query parameters

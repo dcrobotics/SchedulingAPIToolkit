@@ -261,7 +261,7 @@ multiRosters.prototype.fetchRosters = function multiRosterFetchData(startDate, e
   var EVT_LIST_IDX = this.mReq.addReqs(1, parseRostersFunc(this));
   this.mReq.label[EVT_LIST_IDX] = EVT_LIST_LABEL;
 
-  var requrl = 'https://waybright.com/wp-json/ee/v4.8.36/events?where[Datetime.DTT_EVT_start][0]=BETWEEN&where[Datetime.DTT_EVT_start][1][]=2017-01-22T00:00:00&where[Datetime.DTT_EVT_start][1][]=2017-01-29T00:00:00&li‌​mit=2000';
+  var requrl = 'https://waybright.com/wp-json/ee/v4.8.36/events?where[Datetime.DTT_EVT_start][0]=BETWEEN&where[Datetime.DTT_EVT_start][1][]=2017-07-13T00:00:00&where[Datetime.DTT_EVT_start][1][]=2017-07-27T00:00:00&li‌​mit=2000';
   this.mReq.getReq(EVT_LIST_IDX,requrl);
 }
 

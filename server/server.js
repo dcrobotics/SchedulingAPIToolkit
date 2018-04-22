@@ -81,8 +81,8 @@ webServer.get('^\/signout\/?$', authRoute.signOut);
 
 /********************************/
 // API Routes
-webServer.get('^\/wp|^\/ee|^\/report|^\/refresh\/?$', route.apiRoute );
-webServer.post('^\/wp|^\/ee|^\/report|^\/refresh\/?$', route.apiRoutePost );
+webServer.get('^\/wp|^\/gs|^\/ee|^\/report|^\/refresh\/?$', route.apiRoute );
+webServer.post('^\/wp|^\/gs|^\/ee|^\/report|^\/refresh\/?$', route.apiRoutePost );
 
 /********************************/
 
